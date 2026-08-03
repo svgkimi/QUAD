@@ -1,0 +1,20 @@
+<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!--
+    앱인토스 콘솔 등록용 임시 브랜드 아이콘 (플레이스홀더).
+    브랜드명 QUAD(4)에 맞춰 2x2 블록 4개를 배치했고, 색은 colors.ts의 고유 네온 팔레트를 쓴다.
+    실제 로고가 준비되면 이 파일만 교체하면 된다 (granite.config.ts의 brand.icon 경로는 그대로).
+  -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0a0a0f" />
+      <stop offset="100%" stop-color="#1c0f22" />
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bg)" />
+  <g>
+    <rect x="136" y="136" width="112" height="112" rx="16" fill="#ff2d78" />
+    <rect x="264" y="136" width="112" height="112" rx="16" fill="#a3e635" />
+    <rect x="136" y="264" width="112" height="112" rx="16" fill="#38bdf8" />
+    <rect x="264" y="264" width="112" height="112" rx="16" fill="#fde047" />
+  </g>
+</svg>

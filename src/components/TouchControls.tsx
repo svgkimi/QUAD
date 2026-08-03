@@ -191,7 +191,7 @@ export function TouchControls({ dispatch, triggerHardDrop, status, sounds }: Tou
 
   return (
     <div
-      className={`flex w-full touch-none select-none items-center justify-between px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] transition-opacity ${
+      className={`flex w-full touch-none select-none items-center justify-between px-3 pb-[max(0.75rem,env(safe-area-inset-bottom),var(--ait-safe-bottom,0px))] transition-opacity ${
         disabled ? "pointer-events-none opacity-30" : ""
       }`}
       style={{ touchAction: "none" }}

@@ -68,7 +68,7 @@ export function useEffects(lastScoreEvent: ScoreEvent | null): UseEffectsResult 
         tone: "tspin",
       });
     } else if (category === "tetris") {
-      newPopups.push({ id: tokenRef.current * 10 + 2, title: "TETRIS", tone: "tetris" });
+      newPopups.push({ id: tokenRef.current * 10 + 2, title: "QUAD", tone: "tetris" });
     } else if (hasClear) {
       newPopups.push({ id: tokenRef.current * 10 + 3, title: category.toUpperCase(), tone: "clear" });
     }

@@ -2,6 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * 앱인토스 환경에서 useAppsInTossSafeArea 훅이 실제 Safe Area 값으로 덮어쓴다.
+ * 일반 브라우저(기존 Vercel 웹 배포)에서는 이 기본값(0px)이 그대로 유지되어
+ * env(safe-area-inset-*) 기반 기존 레이아웃과 동일하게 동작한다.
+ */
+:root {
+  --ait-safe-top: 0px;
+  --ait-safe-right: 0px;
+  --ait-safe-bottom: 0px;
+  --ait-safe-left: 0px;
+}
+
 html,
 body,
 #root {

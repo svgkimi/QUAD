@@ -59,9 +59,9 @@ export function TitleScreen({
       {/* ---- 1차 정보: 로고 ---- */}
       <div className="flex flex-col items-center gap-3">
         <h1 className="bg-gradient-to-b from-cyan-300 via-fuchsia-300 to-amber-300 bg-clip-text text-5xl font-black tracking-tight text-transparent drop-shadow-[0_0_30px_rgba(168,85,247,0.35)] sm:text-6xl">
-          MODERN TETRIS
+          QUAD
         </h1>
-        <p className="text-sm tracking-[0.3em] text-white/40">SRS · HOLD · GHOST PIECE</p>
+        <p className="text-sm tracking-[0.3em] text-white/40">HOLD · GHOST · COMBO</p>
       </div>
 
       {/* ---- 1차 정보: 시작 / 대전 / 최고 점수 ---- */}

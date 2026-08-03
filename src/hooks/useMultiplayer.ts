@@ -20,6 +20,16 @@ import { useCallback, useEffect, useRef, useState } from "react";
 const BATTLE_SERVER_URL: string =
   (import.meta.env.VITE_BATTLE_SERVER_URL as string | undefined) ?? "ws://localhost:8787";
 
+// 프로덕션 번들에 평문 ws:// 주소가 박히면 HTTPS 페이지에서 mixed-content로 차단되고,
+// 앱인토스 게임 심사 체크리스트("WebSocket은 암호화된 wss:// 사용")도 통과하지 못한다.
+// VITE_*는 빌드 시점에 값이 고정되므로 배포 전 빌드 환경변수 설정을 놓치기 쉬워 경고를 남긴다.
+if (import.meta.env.PROD && !BATTLE_SERVER_URL.startsWith("wss://")) {
+  console.warn(
+    `[multiplayer] VITE_BATTLE_SERVER_URL이 wss://가 아닙니다 (현재: ${BATTLE_SERVER_URL}). ` +
+      "배포 환경변수를 확인하세요 - HTTPS/앱인토스 웹뷰에서는 대전 모드 연결이 차단됩니다.",
+  );
+}
+
 /** 대전 모드 종류: 공격전(가비지 주고받기) | 스코어전(점수 비교) */
 export type BattleMode = "attack" | "score";
 

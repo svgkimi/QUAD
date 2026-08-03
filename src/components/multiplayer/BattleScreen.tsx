@@ -72,6 +72,8 @@ export function BattleScreen({ matchStart, roomName, network, onLeaveRoom, onExi
   const { state, ghost, hardDropTrail, start, dispatch, triggerHardDrop } = useGameEngine({ sounds });
   const { shake, popups } = useEffects(state.lastScoreEvent);
   const isMobile = useIsMobile();
+  /** 매치 도중 "나가기"를 눌렀을 때 띄우는 확인 모달의 표시 여부 */
+  const [confirmLeaveOpen, setConfirmLeaveOpen] = useState(false);
 
   const {
     status: networkStatus,
@@ -208,13 +210,59 @@ export function BattleScreen({ matchStart, roomName, network, onLeaveRoom, onExi
         isMobile ? "justify-start gap-2 overflow-y-auto pb-32" : "justify-center gap-3 overflow-hidden"
       }`}
     >
-      {/* ---- 상단: 방 이름 + 모드 표시 ---- */}
-      <div className="flex items-center gap-3 text-sm">
-        <span className="font-bold text-white/80">{roomName ?? "대전"}</span>
-        <span className="rounded-full bg-white/10 px-3 py-0.5 text-xs text-white/70">
+      {/* ---- 상단: 방 이름 + 모드 표시 + 사운드/나가기 ----
+           사운드 토글과 나가기는 매치 진행 중에도 항상 눌러야 한다 (미니앱 심사 필수 항목:
+           "모든 화면에서 나가는 방법 제공", "사운드 On/Off를 사용자가 직접 제어"). 결과
+           오버레이 안의 나가기 버튼은 매치가 끝나야 나타나므로 그것만으로는 부족하다. */}
+      <div className="flex w-full max-w-md items-center justify-center gap-2 text-sm">
+        <span className="truncate font-bold text-white/80">{roomName ?? "대전"}</span>
+        <span className="shrink-0 rounded-full bg-white/10 px-3 py-0.5 text-xs text-white/70">
           {isScoreMode ? "🏆 스코어전" : "⚔️ 공격전"}
         </span>
+        <div className="ml-auto flex shrink-0 items-center gap-1.5">
+          <button
+            type="button"
+            aria-label={soundEnabled ? "소리 끄기" : "소리 켜기"}
+            onClick={toggleSound}
+            className="flex h-8 w-8 items-center justify-center rounded-md border border-white/10 bg-black/30 text-sm text-white/80"
+          >
+            {soundEnabled ? "🔊" : "🔇"}
+          </button>
+          <button
+            type="button"
+            onClick={() => setConfirmLeaveOpen(true)}
+            className="rounded-md border border-white/10 bg-black/30 px-2.5 py-1.5 text-xs font-semibold text-white/70"
+          >
+            나가기
+          </button>
+        </div>
       </div>
+
+      {/* 매치 도중 실수로 나가는 것을 막기 위한 확인 모달 (상대방에게도 영향이 있는 행동이다) */}
+      {confirmLeaveOpen && (
+        <div className="fixed inset-0 z-[90] flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="mx-4 flex w-full max-w-xs flex-col items-center gap-4 rounded-2xl border border-white/10 bg-[#14141c] p-6 text-center shadow-2xl">
+            <p className="text-base font-semibold text-white">대전을 나갈까요?</p>
+            <p className="text-xs text-white/50">진행 중인 판은 기록되지 않습니다</p>
+            <div className="flex w-full gap-2">
+              <button
+                type="button"
+                onClick={() => setConfirmLeaveOpen(false)}
+                className="flex-1 rounded-xl border border-white/15 bg-white/5 py-2.5 text-sm font-semibold text-white/80"
+              >
+                계속하기
+              </button>
+              <button
+                type="button"
+                onClick={onLeaveRoom}
+                className="flex-1 rounded-xl bg-rose-500/90 py-2.5 text-sm font-semibold text-white"
+              >
+                나가기
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ---- 모바일: 상대방 보드는 아주 작게 상단에 배치 ---- */}
       {isMobile && (

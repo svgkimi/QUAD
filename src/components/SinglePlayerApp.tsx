@@ -26,6 +26,7 @@ import { ScoreBoard } from "./ScoreBoard";
 import { SoundControl } from "./SoundControl";
 import { TouchControls } from "./TouchControls";
 import { EffectPopups } from "./effects/EffectPopups";
+import { AppsInTossTopBar } from "./AppsInTossTopBar";
 import { TitleScreen } from "./screens/TitleScreen";
 import { CountdownOverlay } from "./screens/CountdownOverlay";
 import { PauseOverlay } from "./screens/PauseOverlay";
@@ -126,122 +127,45 @@ function SinglePlayerApp({ onOpenMultiplayer }: SinglePlayerAppProps) {
   const nextPreview = useMemo(() => previewNext(state.pieceQueue, 5), [state.pieceQueue]);
 
   return (
-    <div
-      className={
-        isMobile && phase !== "title"
-          ? "flex h-dvh w-full flex-col items-stretch overflow-hidden bg-[#0a0a0f]"
-          : "flex h-full w-full items-center justify-center overflow-hidden bg-[#0a0a0f] p-4"
-      }
-    >
-      {phase === "title" && (
-        <TitleScreen
-          highScore={highScore}
-          soundEnabled={soundEnabled}
-          onStart={handleStartClick}
-          onToggleSound={toggleSound}
-          musicTracks={music.tracks}
-          musicTrackIndex={music.trackIndex}
-          onSelectMusicTrack={music.setTrackIndex}
-          onOpenMultiplayer={onOpenMultiplayer}
-        />
-      )}
+    <div className="flex h-dvh w-full flex-col overflow-hidden bg-[#0a0a0f]">
+      {/* 앱인토스 환경이 아니면 null을 반환하므로, 기존 웹 배포 레이아웃에는 아무 영향이 없다 */}
+      <AppsInTossTopBar />
+      <div
+        className={
+          isMobile && phase !== "title"
+            ? "flex w-full flex-1 min-h-0 flex-col items-stretch overflow-hidden"
+            : "flex w-full flex-1 min-h-0 items-center justify-center overflow-hidden p-4"
+        }
+      >
+        {phase === "title" && (
+          <TitleScreen
+            highScore={highScore}
+            soundEnabled={soundEnabled}
+            onStart={handleStartClick}
+            onToggleSound={toggleSound}
+            musicTracks={music.tracks}
+            musicTrackIndex={music.trackIndex}
+            onSelectMusicTrack={music.setTrackIndex}
+            onOpenMultiplayer={onOpenMultiplayer}
+          />
+        )}
 
-      {phase !== "title" && !isMobile && (
-        <div className="flex items-start gap-4">
-          <div className="flex flex-col gap-4 pt-1">
-            <HoldPanel hold={state.hold} />
-            <SoundControl
-              soundEnabled={soundEnabled}
-              onToggleSound={toggleSound}
-              tracks={music.tracks}
-              trackIndex={music.trackIndex}
-              onSelectTrack={music.setTrackIndex}
-              volume={music.volume}
-              onChangeVolume={music.setVolume}
-            />
-          </div>
-
-          <div className="relative">
-            <GameBoard
-              board={state.board}
-              active={state.active}
-              ghost={ghost}
-              status={state.status}
-              lastScoreEvent={state.lastScoreEvent}
-              hardDropTrail={hardDropTrail}
-              shake={shake}
-            />
-            <EffectPopups popups={popups} />
-            {phase === "countdown" && countdownValue !== null && <CountdownOverlay value={countdownValue} />}
-            {state.status === "paused" && (
-              <PauseOverlay onResume={resume} onRestart={handleRestart} onMainMenu={handleMainMenu} />
-            )}
-            {state.status === "gameover" && (
-              <GameOverScreen
-                score={state.score}
-                highScore={highScore}
-                isNewHighScore={isNewHighScore}
-                onRestart={handleRestart}
-                onMainMenu={handleMainMenu}
+        {phase !== "title" && !isMobile && (
+          <div className="flex items-start gap-4">
+            <div className="flex flex-col gap-4 pt-1">
+              <HoldPanel hold={state.hold} />
+              <SoundControl
+                soundEnabled={soundEnabled}
+                onToggleSound={toggleSound}
+                tracks={music.tracks}
+                trackIndex={music.trackIndex}
+                onSelectTrack={music.setTrackIndex}
+                volume={music.volume}
+                onChangeVolume={music.setVolume}
               />
-            )}
-          </div>
-
-          <div className="flex flex-col gap-4 pt-1">
-            <ScoreBoard
-              score={state.score}
-              level={state.level}
-              totalLinesCleared={state.totalLinesCleared}
-              combo={state.combo}
-              backToBack={state.backToBack}
-            />
-            <NextQueue upcoming={nextPreview} />
-          </div>
-        </div>
-      )}
-
-      {/* ---- 모바일 레이아웃: 상단에 점수 배너, 그 아래 보드 영역에 HOLD(좌)/NEXT(우)를
-           배너 바로 밑에 붙는 위치(상단 정렬)로 좌우에 배치, 가운데는 반응형 보드,
-           하단에 터치 컨트롤 - 스크롤이 필요 없고, 보드 하단이 터치 컨트롤에 가려지는 일도
-           구조적으로 발생하지 않는다. ---- */}
-      {phase !== "title" && isMobile && (
-        <div className="flex h-full w-full flex-col items-center px-3 pt-[max(0.5rem,env(safe-area-inset-top))]">
-          {/* 점수 배너: 점수를 가장 크게 중앙에 두고(주인공), 일시정지는 우측 끝에 작게 */}
-          <div className="mb-2 flex w-full max-w-md shrink-0 flex-col gap-1 rounded-xl border border-white/10 bg-white/5 px-3 py-2 backdrop-blur-sm">
-            <div className="flex items-center justify-between gap-2">
-              <span className="w-9 shrink-0" aria-hidden="true" />
-              <span className="flex-1 text-center font-mono text-3xl font-black tracking-tight text-white drop-shadow-[0_0_14px_rgba(34,211,238,0.35)]">
-                {state.score.toLocaleString("en-US")}
-              </span>
-              <button
-                type="button"
-                aria-label={state.status === "paused" ? "재개" : "일시정지"}
-                onClick={state.status === "paused" ? resume : pause}
-                disabled={state.status !== "playing" && state.status !== "paused"}
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-white/10 bg-black/30 text-base text-white/80 disabled:opacity-30"
-              >
-                {state.status === "paused" ? "▶" : "❚❚"}
-              </button>
             </div>
 
-            <div className="text-center text-[9px] font-semibold tracking-widest text-white/40">
-              LV.{state.level} · LINES {state.totalLinesCleared}
-            </div>
-          </div>
-
-          {/* 보드 영역: HOLD(좌)/NEXT(우)를 배너 바로 아래에 붙도록 items-start로 상단 정렬하고,
-              가운데 보드는 flex-1 + min-h-0으로 남은 높이를 정확히 채운다. 폭 상한을 따로 두지
-              않는다 - GameBoard가 실제 가로/세로를 측정해 10:20 비율을 유지한 채 들어갈 수 있는
-              최대 크기로 스스로 키운다. */}
-          <div className="flex min-h-0 w-full max-w-md flex-1 items-start justify-center gap-2">
-            <div className="flex w-14 shrink-0 flex-col items-center gap-1">
-              <span className="text-[9px] font-semibold tracking-widest text-white/40">HOLD</span>
-              <div className="flex h-12 w-12 items-center justify-center rounded-md border border-white/10 bg-black/30">
-                <MiniPiece type={state.hold.type} cellSize={10} dimmed={!state.hold.canHold} />
-              </div>
-            </div>
-
-            <div className="relative h-full flex-1 self-stretch">
+            <div className="relative">
               <GameBoard
                 board={state.board}
                 active={state.active}
@@ -250,7 +174,6 @@ function SinglePlayerApp({ onOpenMultiplayer }: SinglePlayerAppProps) {
                 lastScoreEvent={state.lastScoreEvent}
                 hardDropTrail={hardDropTrail}
                 shake={shake}
-                responsive
               />
               <EffectPopups popups={popups} />
               {phase === "countdown" && countdownValue !== null && <CountdownOverlay value={countdownValue} />}
@@ -268,32 +191,133 @@ function SinglePlayerApp({ onOpenMultiplayer }: SinglePlayerAppProps) {
               )}
             </div>
 
-            <div className="flex w-14 shrink-0 flex-col items-center gap-1">
-              <span className="text-[9px] font-semibold tracking-widest text-white/40">NEXT</span>
-              <div className="flex flex-col items-center gap-1">
-                {nextPreview.slice(0, 3).map((type, index) => (
-                  <div
-                    key={index}
-                    className="flex h-12 w-12 items-center justify-center rounded-md border border-white/10 bg-black/30"
-                    style={{ opacity: 1 - index * 0.25 }}
-                  >
-                    <MiniPiece type={type} cellSize={10} />
-                  </div>
-                ))}
-              </div>
+            <div className="flex flex-col gap-4 pt-1">
+              <ScoreBoard
+                score={state.score}
+                level={state.level}
+                totalLinesCleared={state.totalLinesCleared}
+                combo={state.combo}
+                backToBack={state.backToBack}
+              />
+              <NextQueue upcoming={nextPreview} />
             </div>
           </div>
+        )}
 
-          <div className="w-full shrink-0">
-            <TouchControls
-              dispatch={dispatch}
-              triggerHardDrop={triggerHardDrop}
-              status={state.status}
-              sounds={sounds}
-            />
+        {/* ---- 모바일 레이아웃: 상단에 점수 배너, 그 아래 보드 영역에 HOLD(좌)/NEXT(우)를
+             배너 바로 밑에 붙는 위치(상단 정렬)로 좌우에 배치, 가운데는 반응형 보드,
+             하단에 터치 컨트롤 - 스크롤이 필요 없고, 보드 하단이 터치 컨트롤에 가려지는 일도
+             구조적으로 발생하지 않는다. ---- */}
+        {phase !== "title" && isMobile && (
+          <div className="flex h-full w-full flex-col items-center px-3 pt-[max(0.5rem,env(safe-area-inset-top))]">
+            {/* 점수 배너: 점수를 가장 크게 중앙에 두고(주인공), 일시정지는 우측 끝에 작게 */}
+            <div className="mb-2 flex w-full max-w-md shrink-0 flex-col gap-1 rounded-xl border border-white/10 bg-white/5 px-3 py-2 backdrop-blur-sm">
+              <div className="flex items-center justify-between gap-2">
+                {/* 사운드 On/Off - 게임 중에도 언제든 음소거할 수 있어야 한다(미니앱 심사 필수 항목).
+                    데스크톱은 좌측 SoundControl 패널이 담당하지만 모바일 레이아웃에는 그 패널이
+                    없으므로, 일시정지 버튼과 대칭되는 이 슬롯에 배치한다. */}
+                <button
+                  type="button"
+                  aria-label={soundEnabled ? "소리 끄기" : "소리 켜기"}
+                  onClick={toggleSound}
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-white/10 bg-black/30 text-base text-white/80"
+                >
+                  {soundEnabled ? "🔊" : "🔇"}
+                </button>
+                <span className="flex-1 text-center font-mono text-3xl font-black tracking-tight text-white drop-shadow-[0_0_14px_rgba(34,211,238,0.35)]">
+                  {state.score.toLocaleString("en-US")}
+                </span>
+                {/* 카운트다운 중에는 엔진이 아직 playing이 아니라 일시정지가 불가능하다. 그렇다고
+                    버튼을 비활성화하면 카운트다운 동안 빠져나갈 방법이 전혀 없어지므로(심사 항목:
+                    "모든 화면에서 나가는 방법 제공"), 이 구간에서는 메인으로 돌아가는 ✕로 동작시킨다. */}
+                <button
+                  type="button"
+                  aria-label={
+                    phase === "countdown" ? "메인으로" : state.status === "paused" ? "재개" : "일시정지"
+                  }
+                  onClick={
+                    phase === "countdown" ? handleMainMenu : state.status === "paused" ? resume : pause
+                  }
+                  disabled={
+                    phase !== "countdown" && state.status !== "playing" && state.status !== "paused"
+                  }
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-white/10 bg-black/30 text-base text-white/80 disabled:opacity-30"
+                >
+                  {phase === "countdown" ? "✕" : state.status === "paused" ? "▶" : "❚❚"}
+                </button>
+              </div>
+
+              <div className="text-center text-[9px] font-semibold tracking-widest text-white/40">
+                LV.{state.level} · LINES {state.totalLinesCleared}
+              </div>
+            </div>
+
+            {/* 보드 영역: HOLD(좌)/NEXT(우)를 배너 바로 아래에 붙도록 items-start로 상단 정렬하고,
+                가운데 보드는 flex-1 + min-h-0으로 남은 높이를 정확히 채운다. 폭 상한을 따로 두지
+                않는다 - GameBoard가 실제 가로/세로를 측정해 10:20 비율을 유지한 채 들어갈 수 있는
+                최대 크기로 스스로 키운다. */}
+            <div className="flex min-h-0 w-full max-w-md flex-1 items-start justify-center gap-2">
+              <div className="flex w-14 shrink-0 flex-col items-center gap-1">
+                <span className="text-[9px] font-semibold tracking-widest text-white/40">HOLD</span>
+                <div className="flex h-12 w-12 items-center justify-center rounded-md border border-white/10 bg-black/30">
+                  <MiniPiece type={state.hold.type} cellSize={10} dimmed={!state.hold.canHold} />
+                </div>
+              </div>
+
+              <div className="relative h-full flex-1 self-stretch">
+                <GameBoard
+                  board={state.board}
+                  active={state.active}
+                  ghost={ghost}
+                  status={state.status}
+                  lastScoreEvent={state.lastScoreEvent}
+                  hardDropTrail={hardDropTrail}
+                  shake={shake}
+                  responsive
+                />
+                <EffectPopups popups={popups} />
+                {phase === "countdown" && countdownValue !== null && <CountdownOverlay value={countdownValue} />}
+                {state.status === "paused" && (
+                  <PauseOverlay onResume={resume} onRestart={handleRestart} onMainMenu={handleMainMenu} />
+                )}
+                {state.status === "gameover" && (
+                  <GameOverScreen
+                    score={state.score}
+                    highScore={highScore}
+                    isNewHighScore={isNewHighScore}
+                    onRestart={handleRestart}
+                    onMainMenu={handleMainMenu}
+                  />
+                )}
+              </div>
+
+              <div className="flex w-14 shrink-0 flex-col items-center gap-1">
+                <span className="text-[9px] font-semibold tracking-widest text-white/40">NEXT</span>
+                <div className="flex flex-col items-center gap-1">
+                  {nextPreview.slice(0, 3).map((type, index) => (
+                    <div
+                      key={index}
+                      className="flex h-12 w-12 items-center justify-center rounded-md border border-white/10 bg-black/30"
+                      style={{ opacity: 1 - index * 0.25 }}
+                    >
+                      <MiniPiece type={type} cellSize={10} />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="w-full shrink-0">
+              <TouchControls
+                dispatch={dispatch}
+                triggerHardDrop={triggerHardDrop}
+                status={state.status}
+                sounds={sounds}
+              />
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

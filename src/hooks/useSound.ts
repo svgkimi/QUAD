@@ -11,6 +11,7 @@
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { getItem, setItem } from "../lib/persistentStorage";
 
 /** 한 번의 톤(beep) 재생 옵션 */
 interface ToneOptions {
@@ -102,9 +103,9 @@ const MUSIC_TRACKS: readonly MusicTrack[] = [
 ];
 
 /** 선택된 배경음악 트랙 인덱스를 저장하는 LocalStorage 키 */
-const TRACK_STORAGE_KEY = "modern-tetris:music-track";
+const TRACK_STORAGE_KEY = "quad:music-track";
 /** 배경음악 볼륨(0~1)을 저장하는 LocalStorage 키 */
-const MUSIC_VOLUME_KEY = "modern-tetris:music-volume";
+const MUSIC_VOLUME_KEY = "quad:music-volume";
 /** 배경음악 기본 볼륨 (사용자가 따로 설정하지 않았을 때) */
 const DEFAULT_MUSIC_VOLUME = 0.6;
 
@@ -494,6 +495,35 @@ export function useSound(): UseSoundResult {
   const trackIndexRef = useRef(trackIndex);
   trackIndexRef.current = trackIndex;
 
+  // 앱인토스 환경에서는 위 동기 초기값(LocalStorage)이 SDK Storage에 저장된 실제 설정과 다를 수
+  // 있으므로, 마운트 시 한 번 비동기로 다시 조회해 보정한다. 일반 웹 배포에서는 같은 값이 돌아와
+  // 아무 변화가 없다.
+  useEffect(() => {
+    let cancelled = false;
+    void Promise.all([getItem(TRACK_STORAGE_KEY), getItem(MUSIC_VOLUME_KEY)]).then(([rawTrack, rawVolume]) => {
+      if (cancelled) return;
+      if (rawTrack !== null) {
+        const parsed = Number.parseInt(rawTrack, 10);
+        if (Number.isFinite(parsed)) {
+          const clamped = Math.min(MUSIC_TRACKS.length - 1, Math.max(0, parsed));
+          trackIndexRef.current = clamped;
+          setTrackIndexState(clamped);
+        }
+      }
+      if (rawVolume !== null) {
+        const parsed = Number.parseFloat(rawVolume);
+        if (Number.isFinite(parsed)) {
+          const clamped = Math.min(1, Math.max(0, parsed));
+          musicVolumeRef.current = clamped;
+          setMusicVolumeState(clamped);
+        }
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   /** 실행 중인 배경음악 루프의 interval id (재생 중이 아니면 null) */
   const musicTimerRef = useRef<number | null>(null);
   /** 다음에 재생할 스텝 인덱스 */
@@ -567,17 +597,36 @@ export function useSound(): UseSoundResult {
     }
   }, []);
 
+  // 앱이 백그라운드로 내려가면(탭 전환, 미니앱 이탈, 화면 잠금) 배경음악 루프를 멈추고
+  // AudioContext까지 suspend해 예약된 효과음까지 확실히 무음으로 만든다
+  // (앱인토스 게임 심사 체크리스트: "백그라운드 진입 시 모든 사운드 정지").
+  //
+  // 복귀 시에는 AudioContext만 다시 running으로 되돌리고 음악 재생 여부는 건드리지 않는다.
+  // 배경음악의 시작/정지는 게임 상태(state.status)를 보고 호출부(SinglePlayerApp/BattleScreen)의
+  // 이펙트가 단독으로 결정하는데, 백그라운드 진입 시 useGameEngine이 게임을 자동 일시정지시키므로
+  // 여기서 임의로 다시 재생하면 "일시정지 상태인데 음악만 흐르는" 어긋난 상태가 된다.
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      const ctx = ctxRef.current;
+      if (document.hidden) {
+        stopMusic();
+        if (ctx && ctx.state === "running") void ctx.suspend();
+      } else if (ctx && ctx.state === "suspended") {
+        void ctx.resume();
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
+  }, [stopMusic]);
+
   /** 배경음악 트랙을 변경한다. 재생 중이면 즉시 전환하고, 선택값은 LocalStorage에 저장한다 */
   const setTrackIndex = useCallback(
     (index: number) => {
       const clamped = Math.min(MUSIC_TRACKS.length - 1, Math.max(0, index));
       trackIndexRef.current = clamped;
       setTrackIndexState(clamped);
-      try {
-        window.localStorage.setItem(TRACK_STORAGE_KEY, String(clamped));
-      } catch {
-        // LocalStorage 접근 불가 환경(프라이빗 모드 등)에서는 조용히 무시한다
-      }
+      void setItem(TRACK_STORAGE_KEY, String(clamped));
       if (musicTimerRef.current !== null) {
         restartMusicTimer();
       }
@@ -590,11 +639,7 @@ export function useSound(): UseSoundResult {
     const clamped = Math.min(1, Math.max(0, volume));
     musicVolumeRef.current = clamped;
     setMusicVolumeState(clamped);
-    try {
-      window.localStorage.setItem(MUSIC_VOLUME_KEY, String(clamped));
-    } catch {
-      // LocalStorage 접근 불가 환경(프라이빗 모드 등)에서는 조용히 무시한다
-    }
+    void setItem(MUSIC_VOLUME_KEY, String(clamped));
     const ctx = ctxRef.current;
     const musicGain = musicGainRef.current;
     if (ctx && musicGain) {
