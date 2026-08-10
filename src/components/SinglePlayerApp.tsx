@@ -31,6 +31,7 @@ import { TitleScreen } from "./screens/TitleScreen";
 import { CountdownOverlay } from "./screens/CountdownOverlay";
 import { PauseOverlay } from "./screens/PauseOverlay";
 import { GameOverScreen } from "./screens/GameOverScreen";
+import { SpeakerOffIcon, SpeakerOnIcon } from "./icons";
 
 /** 화면 흐름 단계 (엔진의 GameStatus와는 별개인, 순수 UI 레이어의 상태) */
 type AppPhase = "title" | "countdown" | "game";
@@ -146,6 +147,9 @@ function SinglePlayerApp({ onOpenMultiplayer }: SinglePlayerAppProps) {
             musicTracks={music.tracks}
             musicTrackIndex={music.trackIndex}
             onSelectMusicTrack={music.setTrackIndex}
+            musicVolume={music.volume}
+            onChangeMusicVolume={music.setVolume}
+            isMobile={isMobile}
             onOpenMultiplayer={onOpenMultiplayer}
           />
         )}
@@ -220,9 +224,13 @@ function SinglePlayerApp({ onOpenMultiplayer }: SinglePlayerAppProps) {
                   type="button"
                   aria-label={soundEnabled ? "소리 끄기" : "소리 켜기"}
                   onClick={toggleSound}
-                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-white/10 bg-black/30 text-base text-white/80"
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-black/30 text-white/80 transition active:scale-95"
                 >
-                  {soundEnabled ? "🔊" : "🔇"}
+                  {soundEnabled ? (
+                    <SpeakerOnIcon className="h-5 w-5 text-cyan-300" />
+                  ) : (
+                    <SpeakerOffIcon className="h-5 w-5 text-white/40" />
+                  )}
                 </button>
                 <span className="flex-1 text-center font-mono text-3xl font-black tracking-tight text-white drop-shadow-[0_0_14px_rgba(34,211,238,0.35)]">
                   {state.score.toLocaleString("en-US")}
@@ -241,7 +249,7 @@ function SinglePlayerApp({ onOpenMultiplayer }: SinglePlayerAppProps) {
                   disabled={
                     phase !== "countdown" && state.status !== "playing" && state.status !== "paused"
                   }
-                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-white/10 bg-black/30 text-base text-white/80 disabled:opacity-30"
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-black/30 text-base text-white/80 disabled:opacity-30"
                 >
                   {phase === "countdown" ? "✕" : state.status === "paused" ? "▶" : "❚❚"}
                 </button>

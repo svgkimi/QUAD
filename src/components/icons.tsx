@@ -11,6 +11,22 @@ interface IconProps {
   readonly className?: string;
 }
 
+/** 물음표 원(조작 안내) 아이콘 */
+export function HelpCircleIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
+      <circle cx={12} cy={12} r={8.5} stroke="currentColor" strokeWidth={1.6} />
+      <path
+        d="M9.8 9.2a2.35 2.35 0 0 1 4.57.78c0 1.83-2.37 2.02-2.37 3.7"
+        stroke="currentColor"
+        strokeWidth={1.6}
+        strokeLinecap="round"
+      />
+      <circle cx={12} cy={17} r={0.85} fill="currentColor" />
+    </svg>
+  );
+}
+
 /** 스피커(소리 켜짐) 아이콘 */
 export function SpeakerOnIcon({ className }: IconProps) {
   return (

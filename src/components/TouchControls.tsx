@@ -5,9 +5,8 @@
  * 키 리스너)과는 완전히 분리된 별도 입력 경로이며, 엔진 로직은 건드리지 않고
  * useGameEngine이 노출하는 `dispatch` / `triggerHardDrop`만 사용한다.
  *
- * 배치(사용자 요청, "2 4" 구성): 좌측에 2개(◀ ▶ 이동), 우측에 닌텐도 게임패드 스타일의
- * 십자형(D-pad) 4버튼 - 위 = 하드드롭(DROP), 왼쪽 = 회전, 오른쪽 = 홀드, 아래 = 소프트드롭.
- * CSS Grid의 gridTemplateAreas로 십자 모양을 만든다(대각선 칸은 비워둠).
+ * 배치: 좌우 각각 3키 방향키 클러스터를 둔다. 왼쪽은 상단 홀드 + 하단 좌/우,
+ * 오른쪽은 상단 회전 + 하단 소프트/하드드롭이다. 버튼 안에는 SVG 아이콘만 표시한다.
  *
  * - 좌/우 이동, 소프트드롭: pointerdown 동안 DAS(최초 지연 후) + ARR(반복 간격)로 자동 반복한다.
  *   (useGameEngine의 키보드 DAS_DELAY_MS=150 / ARR_INTERVAL_MS=35와 동일한 값을 사용해
@@ -102,7 +101,7 @@ function useHoldRepeat(fire: (isFirst: boolean) => void) {
  * 그라디언트 배경 + 컬러 글로우 + 또렷한 눌림 반응으로 "누르는 맛"을 살렸다.
  */
 const BUTTON_BASE =
-  "flex select-none items-center justify-center rounded-2xl border font-bold shadow-[0_2px_0_0_rgba(0,0,0,0.35)] backdrop-blur-sm transition active:translate-y-0.5 active:shadow-none";
+  "relative flex select-none items-center justify-center overflow-hidden rounded-2xl border shadow-[0_5px_0_0_rgba(0,0,0,0.48),inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-sm transition-[transform,box-shadow,filter] duration-75 active:translate-y-[3px] active:scale-[0.96] active:brightness-125 active:shadow-[0_1px_0_0_rgba(0,0,0,0.48),inset_0_1px_3px_rgba(0,0,0,0.35)] disabled:cursor-not-allowed";
 
 /** 이동(◀▶): 시원한 시안 톤 */
 const ACCENT_MOVE =
@@ -120,21 +119,33 @@ const ACCENT_ROTATE =
 const ACCENT_DROP =
   "border-rose-300/60 bg-gradient-to-b from-rose-400/35 to-rose-600/15 text-rose-100 shadow-[0_2px_0_0_rgba(190,18,60,0.6),0_0_18px_rgba(251,113,133,0.45)] active:bg-rose-400/45";
 
-/** 좌측 이동 버튼(◀▶) 크기: 고정 64px 정사각형 */
-const MOVE_BUTTON = "w-16 aspect-square";
-/** 이동 버튼 아이콘 폰트 크기 */
-const MOVE_TEXT = "text-2xl";
+/** 좁은 화면은 72px, 390px 이상은 76px로 키워 큰 터치 영역과 화면 적합성을 함께 지킨다. */
+const CONTROL_KEY = "h-[4.5rem] w-[4.5rem] min-[390px]:h-[4.75rem] min-[390px]:w-[4.75rem]";
+const ICON_SIZE = "h-7 w-7";
 
-/** D-pad 한 칸의 크기(rem). 3x3 그리드로 십자 모양을 만든다 */
-const DPAD_CELL_REM = 3.5;
-/** D-pad 아이콘(회전/소프트드롭) 폰트 크기 */
-const DPAD_ICON_TEXT = "text-2xl";
-/** D-pad 텍스트 라벨(HOLD/DROP) 폰트 크기 */
-const DPAD_LABEL_TEXT = "text-xs";
+/** 좌/우/아래 방향을 표시하는 폰트 비의존 SVG 화살표 */
+function DirectionIcon({ direction }: { readonly direction: "left" | "right" | "down" }) {
+  const rotation = direction === "left" ? "rotate(90 12 12)" : direction === "right" ? "rotate(-90 12 12)" : undefined;
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={ICON_SIZE} aria-hidden="true">
+      <path d="m6 9 6 6 6-6" transform={rotation} stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+/** 회전을 표시하는 원형 화살표 SVG 아이콘 */
+function RotateIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={ICON_SIZE} aria-hidden="true">
+      <path d="M19 7v5h-5" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M18.2 12A6.5 6.5 0 1 1 16.6 7.7L19 10" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
 
 /**
- * 모바일 전용 가상 게임패드. 좌측 2버튼(◀▶ 이동) + 우측 4버튼 십자형 D-pad
- * (위=하드드롭, 왼쪽=회전, 오른쪽=홀드, 아래=소프트드롭). 데스크톱에서는 렌더링되지
+ * 모바일 전용 가상 게임패드. 좌우에 각각 상단 1키 + 하단 2키의 3:3 클러스터를 둔다.
+ * 데스크톱에서는 렌더링되지
  * 않는다(호출부에서 useIsMobile로 조건부 렌더).
  */
 export function TouchControls({ dispatch, triggerHardDrop, status, sounds }: TouchControlsProps) {
@@ -191,76 +202,71 @@ export function TouchControls({ dispatch, triggerHardDrop, status, sounds }: Tou
 
   return (
     <div
-      className={`flex w-full touch-none select-none items-center justify-between px-3 pb-[max(0.75rem,env(safe-area-inset-bottom),var(--ait-safe-bottom,0px))] transition-opacity ${
+      className={`flex w-full touch-none select-none items-end justify-between gap-3 px-3 pb-[max(0.75rem,env(safe-area-inset-bottom),var(--ait-safe-bottom,0px))] pt-2 transition-opacity ${
         disabled ? "pointer-events-none opacity-30" : ""
       }`}
       style={{ touchAction: "none" }}
       data-testid="touch-controls"
     >
-      {/* 좌측: 화면 왼쪽 가장자리에 붙는다. ◀ ▶ (이동) */}
-      <div className="flex gap-1.5">
+      {/* 왼손: 키보드 방향키처럼 홀드를 위에, 좌우 이동을 아래에 둔다. */}
+      <div className="grid grid-cols-2 gap-3">
+        <button
+          type="button"
+          aria-label="홀드"
+          disabled={disabled}
+          onPointerDown={handleHold}
+          className={`${BUTTON_BASE} ${ACCENT_HOLD} ${CONTROL_KEY} col-span-2 justify-self-center`}
+        >
+          <span className="text-[11px] font-black tracking-[0.16em]" aria-hidden="true">HOLD</span>
+        </button>
         <button
           type="button"
           aria-label="왼쪽 이동"
-          className={`${BUTTON_BASE} ${ACCENT_MOVE} ${MOVE_BUTTON} ${MOVE_TEXT}`}
+          disabled={disabled}
+          className={`${BUTTON_BASE} ${ACCENT_MOVE} ${CONTROL_KEY}`}
           {...leftRepeat}
         >
-          ◀
+          <DirectionIcon direction="left" />
         </button>
         <button
           type="button"
           aria-label="오른쪽 이동"
-          className={`${BUTTON_BASE} ${ACCENT_MOVE} ${MOVE_BUTTON} ${MOVE_TEXT}`}
+          disabled={disabled}
+          className={`${BUTTON_BASE} ${ACCENT_MOVE} ${CONTROL_KEY}`}
           {...rightRepeat}
         >
-          ▶
+          <DirectionIcon direction="right" />
         </button>
       </div>
 
-      {/* 우측: 닌텐도 게임패드 스타일 십자형(D-pad) 4버튼. 위=DROP, 왼쪽=회전, 오른쪽=HOLD, 아래=소프트드롭 */}
-      <div
-        className="grid gap-1.5"
-        style={{
-          gridTemplateColumns: `repeat(3, ${DPAD_CELL_REM}rem)`,
-          gridTemplateRows: `repeat(3, ${DPAD_CELL_REM}rem)`,
-          gridTemplateAreas: `". up ." "left . right" ". down ."`,
-        }}
-      >
-        <button
-          type="button"
-          aria-label="하드드롭"
-          onPointerDown={handleHardDrop}
-          style={{ gridArea: "up" }}
-          className={`${BUTTON_BASE} ${ACCENT_DROP} ${DPAD_LABEL_TEXT}`}
-        >
-          DROP
-        </button>
+      {/* 오른손: 회전을 위에, 두 낙하 키를 아래에 둔다. */}
+      <div className="grid grid-cols-2 gap-3">
         <button
           type="button"
           aria-label="회전"
+          disabled={disabled}
           onPointerDown={handleRotate}
-          style={{ gridArea: "left" }}
-          className={`${BUTTON_BASE} ${ACCENT_ROTATE} ${DPAD_ICON_TEXT}`}
+          className={`${BUTTON_BASE} ${ACCENT_ROTATE} ${CONTROL_KEY} col-span-2 justify-self-center`}
         >
-          ↻
-        </button>
-        <button
-          type="button"
-          aria-label="홀드"
-          onPointerDown={handleHold}
-          style={{ gridArea: "right" }}
-          className={`${BUTTON_BASE} ${ACCENT_HOLD} ${DPAD_LABEL_TEXT}`}
-        >
-          HOLD
+          <RotateIcon />
         </button>
         <button
           type="button"
           aria-label="소프트드롭"
-          style={{ gridArea: "down" }}
-          className={`${BUTTON_BASE} ${ACCENT_SOFTDROP} ${DPAD_ICON_TEXT}`}
+          disabled={disabled}
+          className={`${BUTTON_BASE} ${ACCENT_SOFTDROP} ${CONTROL_KEY}`}
           {...softDropRepeat}
         >
-          ▼
+          <DirectionIcon direction="down" />
+        </button>
+        <button
+          type="button"
+          aria-label="하드드롭"
+          disabled={disabled}
+          onPointerDown={handleHardDrop}
+          className={`${BUTTON_BASE} ${ACCENT_DROP} ${CONTROL_KEY}`}
+        >
+          <span className="text-[11px] font-black tracking-[0.16em]" aria-hidden="true">DROP</span>
         </button>
       </div>
     </div>

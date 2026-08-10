@@ -25,6 +25,7 @@ import { NextQueue } from "../NextQueue";
 import { ScoreBoard } from "../ScoreBoard";
 import { SoundControl } from "../SoundControl";
 import { TouchControls } from "../TouchControls";
+import { SpeakerOffIcon, SpeakerOnIcon } from "../icons";
 import { EffectPopups } from "../effects/EffectPopups";
 import { OpponentBoardPreview } from "./OpponentBoardPreview";
 
@@ -226,7 +227,11 @@ export function BattleScreen({ matchStart, roomName, network, onLeaveRoom, onExi
             onClick={toggleSound}
             className="flex h-8 w-8 items-center justify-center rounded-md border border-white/10 bg-black/30 text-sm text-white/80"
           >
-            {soundEnabled ? "🔊" : "🔇"}
+            {soundEnabled ? (
+              <SpeakerOnIcon className="h-5 w-5 text-cyan-300" />
+            ) : (
+              <SpeakerOffIcon className="h-5 w-5 text-white/40" />
+            )}
           </button>
           <button
             type="button"
