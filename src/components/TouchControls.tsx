@@ -6,7 +6,7 @@
  * useGameEngine이 노출하는 `dispatch` / `triggerHardDrop`만 사용한다.
  *
  * 배치: 좌우 각각 3키 방향키 클러스터를 둔다. 왼쪽은 상단 홀드 + 하단 좌/우,
- * 오른쪽은 상단 회전 + 하단 소프트/하드드롭이다. 버튼 안에는 SVG 아이콘만 표시한다.
+ * 오른쪽은 상단 소프트드롭 + 하단 회전/하드드롭이다. 버튼 안에는 SVG 아이콘만 표시한다.
  *
  * - 좌/우 이동, 소프트드롭: pointerdown 동안 DAS(최초 지연 후) + ARR(반복 간격)로 자동 반복한다.
  *   (useGameEngine의 키보드 DAS_DELAY_MS=150 / ARR_INTERVAL_MS=35와 동일한 값을 사용해
@@ -119,8 +119,9 @@ const ACCENT_ROTATE =
 const ACCENT_DROP =
   "border-rose-300/60 bg-gradient-to-b from-rose-400/35 to-rose-600/15 text-rose-100 shadow-[0_2px_0_0_rgba(190,18,60,0.6),0_0_18px_rgba(251,113,133,0.45)] active:bg-rose-400/45";
 
-/** 실제 스마트폰에서 보드보다 과도하게 커지지 않도록 64px로 통일한다. */
-const CONTROL_KEY = "h-16 w-16";
+/** 기기 폭과 실제 가용 높이에 따라 56~64px 사이에서 자동 조절되는 터치 키 크기. */
+const CONTROL_KEY =
+  "h-[clamp(3.5rem,min(15vw,8dvh),4rem)] w-[clamp(3.5rem,min(15vw,8dvh),4rem)]";
 const ICON_SIZE = "h-7 w-7";
 
 /** 좌/우/아래 방향을 표시하는 폰트 비의존 SVG 화살표 */
@@ -202,14 +203,14 @@ export function TouchControls({ dispatch, triggerHardDrop, status, sounds }: Tou
 
   return (
     <div
-      className={`flex w-full touch-none select-none items-end justify-between gap-3 px-3 pb-[max(0.75rem,env(safe-area-inset-bottom),var(--ait-safe-bottom,0px))] pt-2 transition-opacity ${
+      className={`flex w-full touch-none select-none items-end justify-between gap-3 px-3 pb-[max(0.5rem,env(safe-area-inset-bottom),var(--ait-safe-bottom,0px))] pt-1 transition-opacity ${
         disabled ? "pointer-events-none opacity-30" : ""
       }`}
       style={{ touchAction: "none" }}
       data-testid="touch-controls"
     >
       {/* 왼손: 키보드 방향키처럼 홀드를 위에, 좌우 이동을 아래에 둔다. */}
-      <div className="grid grid-cols-2 gap-2.5">
+      <div className="grid grid-cols-2 gap-[clamp(0.5rem,2vw,0.75rem)]">
         <button
           type="button"
           aria-label="홀드"
@@ -239,25 +240,25 @@ export function TouchControls({ dispatch, triggerHardDrop, status, sounds }: Tou
         </button>
       </div>
 
-      {/* 오른손: 회전을 위에, 두 낙하 키를 아래에 둔다. */}
-      <div className="grid grid-cols-2 gap-2.5">
+      {/* 오른손: 자주 누르는 내리기를 위에, 회전과 즉시 낙하를 아래에 둔다. */}
+      <div className="grid grid-cols-2 gap-[clamp(0.5rem,2vw,0.75rem)]">
+        <button
+          type="button"
+          aria-label="소프트드롭"
+          disabled={disabled}
+          className={`${BUTTON_BASE} ${ACCENT_SOFTDROP} ${CONTROL_KEY} col-span-2 justify-self-center`}
+          {...softDropRepeat}
+        >
+          <DirectionIcon direction="down" />
+        </button>
         <button
           type="button"
           aria-label="회전"
           disabled={disabled}
           onPointerDown={handleRotate}
-          className={`${BUTTON_BASE} ${ACCENT_ROTATE} ${CONTROL_KEY} col-span-2 justify-self-center`}
+          className={`${BUTTON_BASE} ${ACCENT_ROTATE} ${CONTROL_KEY}`}
         >
           <RotateIcon />
-        </button>
-        <button
-          type="button"
-          aria-label="소프트드롭"
-          disabled={disabled}
-          className={`${BUTTON_BASE} ${ACCENT_SOFTDROP} ${CONTROL_KEY}`}
-          {...softDropRepeat}
-        >
-          <DirectionIcon direction="down" />
         </button>
         <button
           type="button"

@@ -215,7 +215,7 @@ function SinglePlayerApp({ onOpenMultiplayer }: SinglePlayerAppProps) {
         {phase !== "title" && isMobile && (
           <div className="flex h-full w-full flex-col items-center px-3 pt-[max(0.5rem,env(safe-area-inset-top))]">
             {/* 점수 배너: 점수를 가장 크게 중앙에 두고(주인공), 일시정지는 우측 끝에 작게 */}
-            <div className="mb-1.5 flex w-full max-w-md shrink-0 flex-col gap-0.5 rounded-xl border border-white/10 bg-white/5 px-2.5 py-1.5 backdrop-blur-sm">
+            <div className="mb-1 flex w-full max-w-md shrink-0 flex-col rounded-xl border border-white/10 bg-white/5 px-2 py-1 backdrop-blur-sm">
               <div className="flex items-center justify-between gap-2">
                 {/* 사운드 On/Off - 게임 중에도 언제든 음소거할 수 있어야 한다(미니앱 심사 필수 항목).
                     데스크톱은 좌측 SoundControl 패널이 담당하지만 모바일 레이아웃에는 그 패널이
@@ -224,15 +224,15 @@ function SinglePlayerApp({ onOpenMultiplayer }: SinglePlayerAppProps) {
                   type="button"
                   aria-label={soundEnabled ? "소리 끄기" : "소리 켜기"}
                   onClick={toggleSound}
-                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-black/30 text-white/80 transition active:scale-95"
+                  className="flex h-[clamp(2rem,4.5dvh,2.5rem)] w-[clamp(2rem,4.5dvh,2.5rem)] shrink-0 items-center justify-center rounded-lg border border-white/10 bg-black/30 text-white/80 transition active:scale-95"
                 >
                   {soundEnabled ? (
-                    <SpeakerOnIcon className="h-5 w-5 text-cyan-300" />
+                    <SpeakerOnIcon className="h-[1.125rem] w-[1.125rem] text-cyan-300" />
                   ) : (
-                    <SpeakerOffIcon className="h-5 w-5 text-white/40" />
+                    <SpeakerOffIcon className="h-[1.125rem] w-[1.125rem] text-white/40" />
                   )}
                 </button>
-                <span className="flex-1 text-center font-mono text-2xl font-black tracking-tight text-white drop-shadow-[0_0_14px_rgba(34,211,238,0.35)]">
+                <span className="flex-1 text-center font-mono text-[clamp(1.25rem,3dvh,1.75rem)] font-black tracking-tight text-white drop-shadow-[0_0_14px_rgba(34,211,238,0.35)]">
                   {state.score.toLocaleString("en-US")}
                 </span>
                 {/* 카운트다운 중에는 엔진이 아직 playing이 아니라 일시정지가 불가능하다. 그렇다고
@@ -249,44 +249,38 @@ function SinglePlayerApp({ onOpenMultiplayer }: SinglePlayerAppProps) {
                   disabled={
                     phase !== "countdown" && state.status !== "playing" && state.status !== "paused"
                   }
-                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-black/30 text-sm text-white/80 disabled:opacity-30"
+                  className="flex h-[clamp(2rem,4.5dvh,2.5rem)] w-[clamp(2rem,4.5dvh,2.5rem)] shrink-0 items-center justify-center rounded-lg border border-white/10 bg-black/30 text-xs text-white/80 disabled:opacity-30"
                 >
                   {phase === "countdown" ? "✕" : state.status === "paused" ? "▶" : "❚❚"}
                 </button>
               </div>
 
-              <div className="text-center text-[9px] font-semibold tracking-widest text-white/40">
+              <div className="text-center text-[8px] font-semibold tracking-widest text-white/40">
                 LV.{state.level} · LINES {state.totalLinesCleared}
               </div>
             </div>
 
-            {/* HOLD/NEXT를 보드 위의 얇은 정보줄로 옮겨, 게임판이 모바일 가로폭 전체를 쓴다. */}
+            {/* HOLD/NEXT는 보드 좌우 여백에 떠 있게 해 게임판의 세로 공간을 차지하지 않는다. */}
             <div className="flex min-h-0 w-full max-w-md flex-1 flex-col items-center">
-              <div className="mb-1.5 flex h-11 w-full shrink-0 items-center justify-between px-1">
-                <div className="flex items-center gap-2">
-                  <span className="text-[8px] font-semibold tracking-widest text-white/40">HOLD</span>
-                  <div className="flex h-10 w-10 items-center justify-center rounded-md border border-white/10 bg-black/30">
-                    <MiniPiece type={state.hold.type} cellSize={8} dimmed={!state.hold.canHold} />
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <span className="text-[8px] font-semibold tracking-widest text-white/40">NEXT</span>
-                  <div className="flex gap-1">
-                    {nextPreview.slice(0, 3).map((type, index) => (
-                      <div
-                        key={index}
-                        className="flex h-10 w-10 items-center justify-center rounded-md border border-white/10 bg-black/30"
-                        style={{ opacity: 1 - index * 0.22 }}
-                      >
-                        <MiniPiece type={type} cellSize={8} />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
               <div className="relative min-h-0 w-full flex-1">
+                <div className="pointer-events-none absolute left-0 top-1 z-10 flex w-11 flex-col items-center gap-1">
+                  <span className="text-[7px] font-semibold tracking-widest text-white/40">HOLD</span>
+                  <div className="flex h-9 w-9 items-center justify-center rounded-md border border-white/10 bg-black/50">
+                    <MiniPiece type={state.hold.type} cellSize={7} dimmed={!state.hold.canHold} />
+                  </div>
+                </div>
+                <div className="pointer-events-none absolute right-0 top-1 z-10 flex w-11 flex-col items-center gap-1">
+                  <span className="text-[7px] font-semibold tracking-widest text-white/40">NEXT</span>
+                  {nextPreview.slice(0, 3).map((type, index) => (
+                    <div
+                      key={index}
+                      className="flex h-9 w-9 items-center justify-center rounded-md border border-white/10 bg-black/50"
+                      style={{ opacity: 1 - index * 0.22 }}
+                    >
+                      <MiniPiece type={type} cellSize={7} />
+                    </div>
+                  ))}
+                </div>
                 <GameBoard
                   board={state.board}
                   active={state.active}
