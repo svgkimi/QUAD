@@ -119,8 +119,8 @@ const ACCENT_ROTATE =
 const ACCENT_DROP =
   "border-rose-300/60 bg-gradient-to-b from-rose-400/35 to-rose-600/15 text-rose-100 shadow-[0_2px_0_0_rgba(190,18,60,0.6),0_0_18px_rgba(251,113,133,0.45)] active:bg-rose-400/45";
 
-/** 좁은 화면은 72px, 390px 이상은 76px로 키워 큰 터치 영역과 화면 적합성을 함께 지킨다. */
-const CONTROL_KEY = "h-[4.5rem] w-[4.5rem] min-[390px]:h-[4.75rem] min-[390px]:w-[4.75rem]";
+/** 실제 스마트폰에서 보드보다 과도하게 커지지 않도록 64px로 통일한다. */
+const CONTROL_KEY = "h-16 w-16";
 const ICON_SIZE = "h-7 w-7";
 
 /** 좌/우/아래 방향을 표시하는 폰트 비의존 SVG 화살표 */
@@ -209,7 +209,7 @@ export function TouchControls({ dispatch, triggerHardDrop, status, sounds }: Tou
       data-testid="touch-controls"
     >
       {/* 왼손: 키보드 방향키처럼 홀드를 위에, 좌우 이동을 아래에 둔다. */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-2.5">
         <button
           type="button"
           aria-label="홀드"
@@ -240,7 +240,7 @@ export function TouchControls({ dispatch, triggerHardDrop, status, sounds }: Tou
       </div>
 
       {/* 오른손: 회전을 위에, 두 낙하 키를 아래에 둔다. */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-2.5">
         <button
           type="button"
           aria-label="회전"
