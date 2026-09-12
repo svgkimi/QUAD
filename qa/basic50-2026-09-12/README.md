@@ -58,6 +58,7 @@ node scripts/report-native50.mjs BUILD_ROOT
 - 개인 자료, 실제 .env 값, 로컬 Toss appName/호스트 변경, node_modules, 과거 QA/RC, 앱 심사 자료는 커밋에 넣지 않는다.
 - scripts/publish-verified.mjs는 커밋된 HEAD만 임시 폴더로 추출해 검사 후 개발 브랜치에 non-force push한다. --check-only는 전송하지 않는다.
 - 시간당 향후 자동 push 예약은 보안 검토에서 거절되어 활성화되지 않았다. 저장소/브랜치/반복 주기의 사용자 승인이 필요하다.
+- 이번 커밋의 일회성 원격 push도 목적지에 대한 명시적 승인 부족으로 보안 검토에서 차단됐다. 현재는 로컬 커밋만 완료했으며 GitHub 업로드 완료로 표시하지 않는다.
 - main/운영 배포는 하지 않는다. 원격 서버 폐기도 하지 않는다.
 
 ## 최종 판정
