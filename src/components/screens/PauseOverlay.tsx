@@ -5,22 +5,30 @@
  * 실제 필드 블러 처리는 GameBoard 내부에서 담당하고, 이 컴포넌트는 그 위의 UI(텍스트/버튼)만 그린다.
  */
 
+import { useRef, useId } from "react";
+import { useModalFocus } from "./Modal";
+
 /** PauseOverlay props */
 export interface PauseOverlayProps {
   readonly onResume: () => void;
   readonly onRestart: () => void;
   readonly onMainMenu: () => void;
+  readonly onHelp?: () => void;
+  readonly onCustomizeControls?: () => void;
 }
 
 /**
  * 일시정지 오버레이를 렌더링한다.
  * 입력: onResume, onRestart, onMainMenu / 출력: JSX
  */
-export function PauseOverlay({ onResume, onRestart, onMainMenu }: PauseOverlayProps) {
+export function PauseOverlay({ onResume, onRestart, onMainMenu, onHelp, onCustomizeControls }: PauseOverlayProps) {
+  const root = useRef<HTMLDivElement>(null);
+  const id = useId();
+  useModalFocus(root, onResume);
   return (
-    <div className="absolute inset-0 z-30 flex items-center justify-center">
+    <div ref={root} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby={id} className="fixed inset-0 z-30 flex items-center justify-center overflow-y-auto p-3">
       <div className="flex flex-col items-center gap-5 rounded-2xl border border-white/10 bg-black/60 px-10 py-8 backdrop-blur-md">
-        <h2 className="text-3xl font-black tracking-widest text-white">PAUSED</h2>
+        <h2 id={id} className="text-3xl font-black tracking-widest text-white">PAUSED</h2>
         <div className="flex flex-col gap-2">
           <button
             type="button"
@@ -29,6 +37,8 @@ export function PauseOverlay({ onResume, onRestart, onMainMenu }: PauseOverlayPr
           >
             계속하기
           </button>
+          {onHelp && <button type="button" onClick={onHelp} className="min-h-11 rounded-full px-8 text-cyan-200">조작 안내</button>}
+          {onCustomizeControls && <button type="button" onClick={onCustomizeControls} className="min-h-11 rounded-full px-8 text-white/80">버튼 배치</button>}
           <button
             type="button"
             onClick={onRestart}

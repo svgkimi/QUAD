@@ -1,0 +1,502 @@
+[
+  {
+    "id": 1,
+    "kind": "lines",
+    "target": 3,
+    "difficulty": 0.5,
+    "obstacleRows": 0,
+    "limitMs": null,
+    "surviveMs": null,
+    "isBoss": false
+  },
+  {
+    "id": 2,
+    "kind": "lines",
+    "target": 4,
+    "difficulty": 0.5,
+    "obstacleRows": 0,
+    "limitMs": null,
+    "surviveMs": null,
+    "isBoss": false
+  },
+  {
+    "id": 3,
+    "kind": "timed",
+    "target": 4,
+    "difficulty": 0.5,
+    "obstacleRows": 0,
+    "limitMs": 120000,
+    "surviveMs": null,
+    "isBoss": false
+  },
+  {
+    "id": 4,
+    "kind": "lines",
+    "target": 5,
+    "difficulty": 1,
+    "obstacleRows": 0,
+    "limitMs": null,
+    "surviveMs": null,
+    "isBoss": false
+  },
+  {
+    "id": 5,
+    "kind": "duel",
+    "target": 0,
+    "difficulty": 1,
+    "obstacleRows": 0,
+    "limitMs": null,
+    "surviveMs": null,
+    "isBoss": false
+  },
+  {
+    "id": 6,
+    "kind": "lines",
+    "target": 5,
+    "difficulty": 1,
+    "obstacleRows": 0,
+    "limitMs": null,
+    "surviveMs": null,
+    "isBoss": false
+  },
+  {
+    "id": 7,
+    "kind": "timed",
+    "target": 5,
+    "difficulty": 1,
+    "obstacleRows": 0,
+    "limitMs": 120000,
+    "surviveMs": null,
+    "isBoss": false
+  },
+  {
+    "id": 8,
+    "kind": "lines",
+    "target": 6,
+    "difficulty": 1,
+    "obstacleRows": 2,
+    "limitMs": null,
+    "surviveMs": null,
+    "isBoss": false
+  },
+  {
+    "id": 9,
+    "kind": "timed",
+    "target": 6,
+    "difficulty": 1,
+    "obstacleRows": 0,
+    "limitMs": 120000,
+    "surviveMs": null,
+    "isBoss": false
+  },
+  {
+    "id": 10,
+    "kind": "duel",
+    "target": 0,
+    "difficulty": 1.5,
+    "obstacleRows": 0,
+    "limitMs": null,
+    "surviveMs": null,
+    "isBoss": true
+  },
+  {
+    "id": 11,
+    "kind": "lines",
+    "target": 7,
+    "difficulty": 1,
+    "obstacleRows": 0,
+    "limitMs": null,
+    "surviveMs": null,
+    "isBoss": false
+  },
+  {
+    "id": 12,
+    "kind": "timed",
+    "target": 7,
+    "difficulty": 1.5,
+    "obstacleRows": 0,
+    "limitMs": 120000,
+    "surviveMs": null,
+    "isBoss": false
+  },
+  {
+    "id": 13,
+    "kind": "lines",
+    "target": 8,
+    "difficulty": 1.5,
+    "obstacleRows": 2,
+    "limitMs": null,
+    "surviveMs": null,
+    "isBoss": false
+  },
+  {
+    "id": 14,
+    "kind": "survival",
+    "target": 0,
+    "difficulty": 1.5,
+    "obstacleRows": 0,
+    "limitMs": null,
+    "surviveMs": 75000,
+    "isBoss": false
+  },
+  {
+    "id": 15,
+    "kind": "duel",
+    "target": 0,
+    "difficulty": 1.5,
+    "obstacleRows": 0,
+    "limitMs": null,
+    "surviveMs": null,
+    "isBoss": false
+  },
+  {
+    "id": 16,
+    "kind": "lines",
+    "target": 8,
+    "difficulty": 1.5,
+    "obstacleRows": 0,
+    "limitMs": null,
+    "surviveMs": null,
+    "isBoss": false
+  },
+  {
+    "id": 17,
+    "kind": "timed",
+    "target": 8,
+    "difficulty": 1.5,
+    "obstacleRows": 0,
+    "limitMs": 120000,
+    "surviveMs": null,
+    "isBoss": false
+  },
+  {
+    "id": 18,
+    "kind": "lines",
+    "target": 9,
+    "difficulty": 1.5,
+    "obstacleRows": 3,
+    "limitMs": null,
+    "surviveMs": null,
+    "isBoss": false
+  },
+  {
+    "id": 19,
+    "kind": "timed",
+    "target": 9,
+    "difficulty": 2,
+    "obstacleRows": 0,
+    "limitMs": 120000,
+    "surviveMs": null,
+    "isBoss": false
+  },
+  {
+    "id": 20,
+    "kind": "duel",
+    "target": 0,
+    "difficulty": 2,
+    "obstacleRows": 0,
+    "limitMs": null,
+    "surviveMs": null,
+    "isBoss": true
+  },
+  {
+    "id": 21,
+    "kind": "lines",
+    "target": 10,
+    "difficulty": 1.5,
+    "obstacleRows": 0,
+    "limitMs": null,
+    "surviveMs": null,
+    "isBoss": false
+  },
+  {
+    "id": 22,
+    "kind": "timed",
+    "target": 10,
+    "difficulty": 2,
+    "obstacleRows": 0,
+    "limitMs": 120000,
+    "surviveMs": null,
+    "isBoss": false
+  },
+  {
+    "id": 23,
+    "kind": "survival",
+    "target": 0,
+    "difficulty": 2,
+    "obstacleRows": 0,
+    "limitMs": null,
+    "surviveMs": 90000,
+    "isBoss": false
+  },
+  {
+    "id": 24,
+    "kind": "lines",
+    "target": 10,
+    "difficulty": 2,
+    "obstacleRows": 3,
+    "limitMs": null,
+    "surviveMs": null,
+    "isBoss": false
+  },
+  {
+    "id": 25,
+    "kind": "duel",
+    "target": 0,
+    "difficulty": 2,
+    "obstacleRows": 0,
+    "limitMs": null,
+    "surviveMs": null,
+    "isBoss": false
+  },
+  {
+    "id": 26,
+    "kind": "lines",
+    "target": 12,
+    "difficulty": 2,
+    "obstacleRows": 0,
+    "limitMs": null,
+    "surviveMs": null,
+    "isBoss": false
+  },
+  {
+    "id": 27,
+    "kind": "timed",
+    "target": 11,
+    "difficulty": 2,
+    "obstacleRows": 0,
+    "limitMs": 120000,
+    "surviveMs": null,
+    "isBoss": false
+  },
+  {
+    "id": 28,
+    "kind": "lines",
+    "target": 12,
+    "difficulty": 2.5,
+    "obstacleRows": 4,
+    "limitMs": null,
+    "surviveMs": null,
+    "isBoss": false
+  },
+  {
+    "id": 29,
+    "kind": "timed",
+    "target": 12,
+    "difficulty": 2.5,
+    "obstacleRows": 0,
+    "limitMs": 120000,
+    "surviveMs": null,
+    "isBoss": false
+  },
+  {
+    "id": 30,
+    "kind": "duel",
+    "target": 0,
+    "difficulty": 3,
+    "obstacleRows": 0,
+    "limitMs": null,
+    "surviveMs": null,
+    "isBoss": true
+  },
+  {
+    "id": 31,
+    "kind": "lines",
+    "target": 12,
+    "difficulty": 2.5,
+    "obstacleRows": 0,
+    "limitMs": null,
+    "surviveMs": null,
+    "isBoss": false
+  },
+  {
+    "id": 32,
+    "kind": "timed",
+    "target": 13,
+    "difficulty": 2.5,
+    "obstacleRows": 0,
+    "limitMs": 120000,
+    "surviveMs": null,
+    "isBoss": false
+  },
+  {
+    "id": 33,
+    "kind": "survival",
+    "target": 0,
+    "difficulty": 2.5,
+    "obstacleRows": 0,
+    "limitMs": null,
+    "surviveMs": 90000,
+    "isBoss": false
+  },
+  {
+    "id": 34,
+    "kind": "lines",
+    "target": 14,
+    "difficulty": 3,
+    "obstacleRows": 4,
+    "limitMs": null,
+    "surviveMs": null,
+    "isBoss": false
+  },
+  {
+    "id": 35,
+    "kind": "duel",
+    "target": 0,
+    "difficulty": 3,
+    "obstacleRows": 0,
+    "limitMs": null,
+    "surviveMs": null,
+    "isBoss": false
+  },
+  {
+    "id": 36,
+    "kind": "lines",
+    "target": 14,
+    "difficulty": 2.5,
+    "obstacleRows": 0,
+    "limitMs": null,
+    "surviveMs": null,
+    "isBoss": false
+  },
+  {
+    "id": 37,
+    "kind": "timed",
+    "target": 14,
+    "difficulty": 3,
+    "obstacleRows": 0,
+    "limitMs": 120000,
+    "surviveMs": null,
+    "isBoss": false
+  },
+  {
+    "id": 38,
+    "kind": "lines",
+    "target": 15,
+    "difficulty": 3,
+    "obstacleRows": 5,
+    "limitMs": null,
+    "surviveMs": null,
+    "isBoss": false
+  },
+  {
+    "id": 39,
+    "kind": "timed",
+    "target": 15,
+    "difficulty": 3,
+    "obstacleRows": 0,
+    "limitMs": 120000,
+    "surviveMs": null,
+    "isBoss": false
+  },
+  {
+    "id": 40,
+    "kind": "duel",
+    "target": 0,
+    "difficulty": 3.5,
+    "obstacleRows": 0,
+    "limitMs": null,
+    "surviveMs": null,
+    "isBoss": true
+  },
+  {
+    "id": 41,
+    "kind": "lines",
+    "target": 15,
+    "difficulty": 3,
+    "obstacleRows": 0,
+    "limitMs": null,
+    "surviveMs": null,
+    "isBoss": false
+  },
+  {
+    "id": 42,
+    "kind": "timed",
+    "target": 15,
+    "difficulty": 3,
+    "obstacleRows": 0,
+    "limitMs": 120000,
+    "surviveMs": null,
+    "isBoss": false
+  },
+  {
+    "id": 43,
+    "kind": "survival",
+    "target": 0,
+    "difficulty": 3.5,
+    "obstacleRows": 0,
+    "limitMs": null,
+    "surviveMs": 105000,
+    "isBoss": false
+  },
+  {
+    "id": 44,
+    "kind": "lines",
+    "target": 16,
+    "difficulty": 3.5,
+    "obstacleRows": 5,
+    "limitMs": null,
+    "surviveMs": null,
+    "isBoss": false
+  },
+  {
+    "id": 45,
+    "kind": "duel",
+    "target": 0,
+    "difficulty": 3.5,
+    "obstacleRows": 0,
+    "limitMs": null,
+    "surviveMs": null,
+    "isBoss": false
+  },
+  {
+    "id": 46,
+    "kind": "lines",
+    "target": 16,
+    "difficulty": 3,
+    "obstacleRows": 0,
+    "limitMs": null,
+    "surviveMs": null,
+    "isBoss": false
+  },
+  {
+    "id": 47,
+    "kind": "timed",
+    "target": 17,
+    "difficulty": 3.5,
+    "obstacleRows": 0,
+    "limitMs": 120000,
+    "surviveMs": null,
+    "isBoss": false
+  },
+  {
+    "id": 48,
+    "kind": "lines",
+    "target": 18,
+    "difficulty": 3.5,
+    "obstacleRows": 6,
+    "limitMs": null,
+    "surviveMs": null,
+    "isBoss": false
+  },
+  {
+    "id": 49,
+    "kind": "timed",
+    "target": 18,
+    "difficulty": 4,
+    "obstacleRows": 0,
+    "limitMs": 120000,
+    "surviveMs": null,
+    "isBoss": false
+  },
+  {
+    "id": 50,
+    "kind": "duel",
+    "target": 0,
+    "difficulty": 4,
+    "obstacleRows": 0,
+    "limitMs": null,
+    "surviveMs": null,
+    "isBoss": true
+  }
+]

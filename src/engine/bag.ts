@@ -6,7 +6,7 @@
  * 순수 함수로 구현되어 테스트 시 시드 기반 난수 함수를 주입해 결정론적으로 검증할 수 있다.
  */
 
-import { ALL_TETROMINO_TYPES, type RandomFn, type TetrominoType } from "./types";
+import { ALL_TETROMINO_TYPES, type RandomFn, type TetrominoType, type PieceRandomizer } from "./types";
 
 /** 최소한으로 보장해야 하는 다음 피스 미리보기 개수 (PRD: 최소 3~5개) */
 export const NEXT_QUEUE_PREVIEW_SIZE = 5;
@@ -31,11 +31,14 @@ export function shuffleBag(random: RandomFn = Math.random): TetrominoType[] {
 export function refillQueue(
   queue: readonly TetrominoType[],
   random: RandomFn = Math.random,
+  randomizer: PieceRandomizer = "bag",
 ): TetrominoType[] {
   let next = [...queue];
   // 미리보기 개수 + 여유 1개를 항상 확보해 next-queue 조회가 끊기지 않도록 한다.
   while (next.length <= NEXT_QUEUE_PREVIEW_SIZE) {
-    next = next.concat(shuffleBag(random));
+    next = next.concat(randomizer === "independent"
+      ? [ALL_TETROMINO_TYPES[Math.floor(random() * ALL_TETROMINO_TYPES.length)]]
+      : shuffleBag(random));
   }
   return next;
 }
@@ -47,10 +50,11 @@ export function refillQueue(
 export function takeNextPiece(
   queue: readonly TetrominoType[],
   random: RandomFn = Math.random,
+  randomizer: PieceRandomizer = "bag",
 ): { piece: TetrominoType; queue: TetrominoType[] } {
-  const filled = refillQueue(queue, random);
+  const filled = refillQueue(queue, random, randomizer);
   const [piece, ...rest] = filled;
-  const queueAfterTake = refillQueue(rest, random);
+  const queueAfterTake = refillQueue(rest, random, randomizer);
   return { piece, queue: queueAfterTake };
 }
 

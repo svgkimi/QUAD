@@ -26,7 +26,8 @@ function computeIsMobile(): boolean {
   if (typeof window === "undefined") return false;
   // 토스 미니앱은 항상 폰 화면이다 - 감지 없이 모바일 레이아웃을 강제한다
   if (isAppsInToss()) return true;
-  return window.innerWidth < MOBILE_MAX_WIDTH;
+  return window.innerWidth < MOBILE_MAX_WIDTH || window.innerHeight < 650 ||
+    navigator.maxTouchPoints > 0 || window.matchMedia?.("(any-pointer: coarse)").matches === true;
 }
 
 /** 모바일(토스 앱 또는 좁은 화면) 여부를 반환하고, 리사이즈/회전 시 갱신하는 훅 */
@@ -38,9 +39,12 @@ export function useIsMobile(): boolean {
     update();
     window.addEventListener("resize", update);
     window.addEventListener("orientationchange", update);
+    const pointer = window.matchMedia?.("(any-pointer: coarse)");
+    pointer?.addEventListener?.("change", update);
     return () => {
       window.removeEventListener("resize", update);
       window.removeEventListener("orientationchange", update);
+      pointer?.removeEventListener?.("change", update);
     };
   }, []);
 

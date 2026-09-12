@@ -3,8 +3,7 @@
  * -----------------------------------------------------------------------
  * 테스트 재현성을 위한 시드 기반 의사난수 생성기(PRNG).
  * mulberry32 알고리즘을 사용하며, 반환된 함수는 RandomFn(Math.random과 동일한 시그니처)이다.
- * 생성된 함수가 내부에 시드 진행 상태를 캡슐화하지만, 이는 호출자가 명시적으로 생성해
- * EngineState.random 필드에 담아 사용하는 값이므로 "숨겨진 전역 상태"에 해당하지 않는다.
+ * 독립 시뮬레이션은 함수형 생성기를, 엔진 리듀서는 순수 nextRandom과 숫자 커서를 사용한다.
  */
 
 import type { RandomFn } from "./types";
@@ -22,4 +21,13 @@ export function createSeededRandom(seed: number): RandomFn {
     t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
+}
+
+/** 입력: 현재 mulberry32 상태 / 출력: 난수와 다음 상태. 이전 상태를 변경하지 않는다. */
+export function nextRandom(state: number): { value: number; state: number } {
+  const next = (state + 0x6d2b79f5) >>> 0;
+  let t = next;
+  t = Math.imul(t ^ (t >>> 15), t | 1);
+  t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+  return { value: ((t ^ (t >>> 14)) >>> 0) / 4294967296, state: next };
 }

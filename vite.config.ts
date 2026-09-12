@@ -21,5 +21,8 @@ export default defineConfig(({ command }) => ({
   test: {
     globals: true,
     environment: "jsdom",
+    include: ["src/**/*.test.{ts,tsx}", "tests/single-player/**/*.test.{ts,tsx}"],
+    maxWorkers: 2,
+    minWorkers: 1,
   },
 }));

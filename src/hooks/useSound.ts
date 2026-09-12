@@ -163,6 +163,7 @@ export interface MusicControls {
 /** useSound 훅의 반환 타입 */
 export interface UseSoundResult {
   readonly enabled: boolean;
+  readonly storageError: boolean;
   readonly toggle: () => void;
   readonly sounds: SoundEffects;
   readonly music: MusicControls;
@@ -173,6 +174,18 @@ export interface UseSoundResult {
  * 입력: 없음 / 출력: { enabled, toggle, sounds(효과음 재생 함수 모음), music(배경음악 제어) }
  */
 export function useSound(): UseSoundResult {
+  const disposed = useRef(false);
+  const trackChanged = useRef(false);
+  const volumeChanged = useRef(false);
+  const writeVersions = useRef<Record<string, number>>({});
+  const [storageError, setStorageError] = useState(false);
+  const saveSetting = useCallback((key: string, value: string) => {
+    const version = (writeVersions.current[key] ?? 0) + 1;
+    writeVersions.current[key] = version;
+    void setItem(key, value).then(ok => {
+      if (!disposed.current && writeVersions.current[key] === version && ok === false) setStorageError(true);
+    }).catch(() => { if (!disposed.current) setStorageError(true); });
+  }, []);
   const [enabled, setEnabled] = useState<boolean>(true);
   const enabledRef = useRef(enabled);
   enabledRef.current = enabled;
@@ -200,7 +213,7 @@ export function useSound(): UseSoundResult {
    * - masterGain을 1보다 낮게 잡아 애초에 클리핑 여유(헤드룸)를 확보한다.
    */
   const ensureContext = useCallback((): AudioContext | null => {
-    if (typeof window === "undefined") return null;
+    if (disposed.current || typeof window === "undefined" || document.hidden) return null;
     const AudioCtor =
       window.AudioContext ?? (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
     if (!AudioCtor) return null;
@@ -242,7 +255,7 @@ export function useSound(): UseSoundResult {
       musicGainRef.current = musicGain;
     }
     if (ctxRef.current.state === "suspended") {
-      void ctxRef.current.resume();
+      void ctxRef.current.resume().catch(() => undefined);
       // 모바일 사파리/일부 안드로이드 브라우저는 resume()이 아직 완료되지 않은 시점에
       // (Promise가 resolve되기 전에) 예약된 오실레이터를 조용히 버려버리는 경우가 있다.
       // 무음에 가까운(gain=0) 아주 짧은 버퍼 소스를 지금 이 동기 호출 스택 안에서 바로
@@ -292,6 +305,7 @@ export function useSound(): UseSoundResult {
 
       /** 실제로 오실레이터를 만들어 스케줄링한다 (ctx가 running 상태일 때만 호출되어야 소리가 씹히지 않는다) */
       const schedule = () => {
+        if (disposed.current || ctxRef.current !== ctx || !enabledRef.current || document.hidden || ctx.state !== "running") return;
         const startTime = ctx.currentTime + (options.delay ?? 0);
         const oscillator = ctx.createOscillator();
         const gainNode = ctx.createGain();
@@ -325,7 +339,7 @@ export function useSound(): UseSoundResult {
       // (재생되지 않고) 사라진다. resume이 실제로 끝난 뒤에 스케줄링해야 첫 소리가 들린다.
       void ctx.resume().then(() => {
         if (enabledRef.current) schedule();
-      });
+      }).catch(() => undefined);
     },
     [ensureContext],
   );
@@ -363,6 +377,7 @@ export function useSound(): UseSoundResult {
       if (!ctx || !bus) return;
 
       const schedule = () => {
+        if (disposed.current || ctxRef.current !== ctx || !enabledRef.current || document.hidden || ctx.state !== "running") return;
         if (!noiseBufferRef.current || noiseBufferRef.current.sampleRate !== ctx.sampleRate) {
           const buffer = ctx.createBuffer(1, ctx.sampleRate * 0.3, ctx.sampleRate);
           const data = buffer.getChannelData(0);
@@ -386,7 +401,7 @@ export function useSound(): UseSoundResult {
       };
 
       if (ctx.state === "running") schedule();
-      else void ctx.resume().then(() => enabledRef.current && schedule());
+      else void ctx.resume().then(() => enabledRef.current && schedule()).catch(() => undefined);
     },
     [ensureContext],
   );
@@ -500,9 +515,12 @@ export function useSound(): UseSoundResult {
   // 아무 변화가 없다.
   useEffect(() => {
     let cancelled = false;
-    void Promise.all([getItem(TRACK_STORAGE_KEY), getItem(MUSIC_VOLUME_KEY)]).then(([rawTrack, rawVolume]) => {
+    void Promise.allSettled([getItem(TRACK_STORAGE_KEY), getItem(MUSIC_VOLUME_KEY)]).then(([trackResult, volumeResult]) => {
+      const rawTrack = trackResult.status === "fulfilled" ? trackResult.value : null;
+      const rawVolume = volumeResult.status === "fulfilled" ? volumeResult.value : null;
+      if (!cancelled && (trackResult.status === "rejected" || volumeResult.status === "rejected")) setStorageError(true);
       if (cancelled) return;
-      if (rawTrack !== null) {
+      if (rawTrack !== null && !trackChanged.current) {
         const parsed = Number.parseInt(rawTrack, 10);
         if (Number.isFinite(parsed)) {
           const clamped = Math.min(MUSIC_TRACKS.length - 1, Math.max(0, parsed));
@@ -510,7 +528,7 @@ export function useSound(): UseSoundResult {
           setTrackIndexState(clamped);
         }
       }
-      if (rawVolume !== null) {
+      if (rawVolume !== null && !volumeChanged.current) {
         const parsed = Number.parseFloat(rawVolume);
         if (Number.isFinite(parsed)) {
           const clamped = Math.min(1, Math.max(0, parsed));
@@ -584,7 +602,7 @@ export function useSound(): UseSoundResult {
 
   /** 배경음악 루프 재생 시작 (이미 재생 중이면 아무 동작 안 함) */
   const startMusic = useCallback(() => {
-    if (musicTimerRef.current !== null) return;
+    if (disposed.current || document.hidden || musicTimerRef.current !== null) return;
     ensureContext();
     restartMusicTimer();
   }, [ensureContext, restartMusicTimer]);
@@ -597,12 +615,26 @@ export function useSound(): UseSoundResult {
     }
   }, []);
 
+  // 훅 자체가 소유한 자원을 정리한다. 정상 메뉴 전환의 stop과 별개의 방어다.
+  useEffect(() => {
+    disposed.current = false;
+    return () => {
+      disposed.current = true;
+      stopMusic();
+      const ctx = ctxRef.current;
+      ctxRef.current = null;
+      if (ctx && ctx.state !== "closed") void ctx.close().catch(() => undefined);
+      masterGainRef.current = null; musicGainRef.current = null; sfxGainRef.current = null;
+      lowpassRef.current = null; compressorRef.current = null;
+    };
+  }, [stopMusic]);
+
   // 앱이 백그라운드로 내려가면(탭 전환, 미니앱 이탈, 화면 잠금) 배경음악 루프를 멈추고
   // AudioContext까지 suspend해 예약된 효과음까지 확실히 무음으로 만든다
   // (앱인토스 게임 심사 체크리스트: "백그라운드 진입 시 모든 사운드 정지").
   //
   // 복귀 시에는 AudioContext만 다시 running으로 되돌리고 음악 재생 여부는 건드리지 않는다.
-  // 배경음악의 시작/정지는 게임 상태(state.status)를 보고 호출부(SinglePlayerApp/BattleScreen)의
+  // 배경음악의 시작/정지는 게임 상태(state.status)를 보고 호출부(SinglePlayerApp)의
   // 이펙트가 단독으로 결정하는데, 백그라운드 진입 시 useGameEngine이 게임을 자동 일시정지시키므로
   // 여기서 임의로 다시 재생하면 "일시정지 상태인데 음악만 흐르는" 어긋난 상태가 된다.
   useEffect(() => {
@@ -610,9 +642,9 @@ export function useSound(): UseSoundResult {
       const ctx = ctxRef.current;
       if (document.hidden) {
         stopMusic();
-        if (ctx && ctx.state === "running") void ctx.suspend();
+        if (ctx && ctx.state === "running") void ctx.suspend().catch(() => undefined);
       } else if (ctx && ctx.state === "suspended") {
-        void ctx.resume();
+        void ctx.resume().catch(() => undefined);
       }
     };
 
@@ -623,23 +655,27 @@ export function useSound(): UseSoundResult {
   /** 배경음악 트랙을 변경한다. 재생 중이면 즉시 전환하고, 선택값은 LocalStorage에 저장한다 */
   const setTrackIndex = useCallback(
     (index: number) => {
-      const clamped = Math.min(MUSIC_TRACKS.length - 1, Math.max(0, index));
+      if (!Number.isFinite(index)) return;
+      trackChanged.current = true;
+      const clamped = Math.min(MUSIC_TRACKS.length - 1, Math.max(0, Math.trunc(index)));
       trackIndexRef.current = clamped;
       setTrackIndexState(clamped);
-      void setItem(TRACK_STORAGE_KEY, String(clamped));
+      saveSetting(TRACK_STORAGE_KEY, String(clamped));
       if (musicTimerRef.current !== null) {
         restartMusicTimer();
       }
     },
-    [restartMusicTimer],
+    [restartMusicTimer, saveSetting],
   );
 
   /** 배경음악 볼륨을 변경한다 (0~1). 재생 중이든 아니든 즉시 다음 노트부터 반영되고 LocalStorage에 저장된다 */
   const setVolume = useCallback((volume: number) => {
+    if (!Number.isFinite(volume)) return;
+    volumeChanged.current = true;
     const clamped = Math.min(1, Math.max(0, volume));
     musicVolumeRef.current = clamped;
     setMusicVolumeState(clamped);
-    void setItem(MUSIC_VOLUME_KEY, String(clamped));
+    saveSetting(MUSIC_VOLUME_KEY, String(clamped));
     const ctx = ctxRef.current;
     const musicGain = musicGainRef.current;
     if (ctx && musicGain) {
@@ -647,7 +683,7 @@ export function useSound(): UseSoundResult {
       musicGain.gain.cancelScheduledValues(now);
       musicGain.gain.setValueAtTime(clamped, now);
     }
-  }, []);
+  }, [saveSetting]);
 
   const musicTrackList = useMemo(() => MUSIC_TRACKS.map((t) => ({ id: t.id, name: t.name })), []);
 
@@ -665,5 +701,5 @@ export function useSound(): UseSoundResult {
     [startMusic, stopMusic, trackIndex, setTrackIndex, musicTrackList, musicVolume, setVolume, setSpeedMultiplier],
   );
 
-  return { enabled, toggle, sounds, music };
+  return { enabled, toggle, sounds, music, storageError };
 }

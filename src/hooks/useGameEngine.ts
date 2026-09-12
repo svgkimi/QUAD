@@ -40,8 +40,12 @@ export interface HardDropTrailInfo {
 
 /** useGameEngine 훅 옵션 */
 export interface UseGameEngineOptions {
+  /** 캠페인은 엔진의 조작 결과에 목표/AI 상태를 함께 갱신한다. 기본값은 기존 엔진이다. */
+  readonly reducer?: typeof applyAction;
   /** 입력/점수 이벤트에 맞춰 재생할 효과음 모음 (없으면 무음) */
   readonly sounds?: SoundEffects;
+  /** 로비/카운트다운에서는 엔진 입력과 실행을 차단한다. */
+  readonly enabled?: boolean;
 }
 
 /** useGameEngine 훅의 반환 타입 */
@@ -55,7 +59,7 @@ export interface UseGameEngineResult {
   readonly pause: () => void;
   readonly resume: () => void;
   /**
-   * 엔진 리듀서에 임의의 EngineAction을 직접 전달한다 (예: 대전 모드의 RECEIVE_GARBAGE).
+   * 엔진 리듀서에 타입이 지정된 EngineAction을 직접 전달한다.
    * 싱글플레이 흐름에서는 사용하지 않아도 되며, start/restart/pause/resume이 대부분의 경우를 커버한다.
    */
   readonly dispatch: (action: EngineAction) => void;
@@ -111,7 +115,9 @@ function resolveRepeatableAction(code: string): RepeatableAction | null {
 export function useGameEngine(options?: UseGameEngineOptions): UseGameEngineResult {
   // 엔진 리듀서(applyAction)를 그대로 React useReducer에 연결한다.
   // gameEngine.ts의 모든 상태 전이 로직은 순수 함수이므로 React 쪽에서 재구현하지 않는다.
-  const [state, applyAndSet] = useReducer(applyAction, undefined, () => createInitialState());
+  const reducerRef = useRef(options?.reducer ?? applyAction);
+  reducerRef.current = options?.reducer ?? applyAction;
+  const [state, applyAndSet] = useReducer((current: EngineState, action: EngineAction) => reducerRef.current(current, action), undefined, () => createInitialState());
 
   // 최신 state/사운드를 이펙트 클로저 밖에서도 참조하기 위한 ref (키 리스너 재등록을 막기 위함)
   const stateRef = useRef(state);
@@ -119,16 +125,29 @@ export function useGameEngine(options?: UseGameEngineOptions): UseGameEngineResu
   const soundsRef = useRef<SoundEffects | undefined>(options?.sounds);
   soundsRef.current = options?.sounds;
 
+  const enabled = options?.enabled ?? true;
+  const enabledRef = useRef(enabled);
+  enabledRef.current = enabled;
+
   const [hardDropTrail, setHardDropTrail] = useState<HardDropTrailInfo | null>(null);
   const trailTokenRef = useRef(0);
 
   // ---- 게임 흐름 제어 함수 ----
-  const start = useCallback((seed?: number) => applyAndSet({ type: "START", seed }), [applyAndSet]);
-  const restart = useCallback((seed?: number) => applyAndSet({ type: "RESTART", seed }), [applyAndSet]);
+  const start = useCallback((seed?: number) => {
+    setHardDropTrail(null);
+    applyAndSet({ type: "START", seed: seed ?? Math.floor(Math.random() * 4294967296) });
+  }, [applyAndSet]);
+  const restart = useCallback((seed?: number) => {
+    setHardDropTrail(null);
+    applyAndSet({ type: "RESTART", seed: seed ?? Math.floor(Math.random() * 4294967296) });
+  }, [applyAndSet]);
   const pause = useCallback(() => applyAndSet({ type: "PAUSE" }), [applyAndSet]);
-  const resume = useCallback(() => applyAndSet({ type: "RESUME" }), [applyAndSet]);
+  const resume = useCallback(() => {
+    if (enabledRef.current && !document.hidden) applyAndSet({ type: "RESUME" });
+  }, [applyAndSet]);
 
   const togglePause = useCallback(() => {
+    if (!enabledRef.current || document.hidden) return;
     const status = stateRef.current.status;
     if (status === "playing") applyAndSet({ type: "PAUSE" });
     else if (status === "paused") applyAndSet({ type: "RESUME" });
@@ -137,7 +156,7 @@ export function useGameEngine(options?: UseGameEngineOptions): UseGameEngineResu
   /** 하드 드롭: 잔상 이펙트 정보를 먼저 계산한 뒤 실제 엔진 액션을 적용한다 */
   const triggerHardDrop = useCallback(() => {
     const current = stateRef.current;
-    if (current.status !== "playing" || !current.active) return;
+    if (!enabledRef.current || document.hidden || current.status !== "playing" || !current.active) return;
     const ghostPiece = getGhostPiece(current);
     if (ghostPiece) {
       trailTokenRef.current += 1;
@@ -156,6 +175,7 @@ export function useGameEngine(options?: UseGameEngineOptions): UseGameEngineResu
 
   // ---- requestAnimationFrame 기반 게임 루프: 매 프레임 TICK 디스패치 ----
   useEffect(() => {
+    if (!enabled || state.status !== "playing" || document.hidden) return;
     let rafId = 0;
     let lastTime: number | null = null;
     const loop = (time: number) => {
@@ -168,123 +188,91 @@ export function useGameEngine(options?: UseGameEngineOptions): UseGameEngineResu
     };
     rafId = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(rafId);
-  }, [applyAndSet]);
+  }, [applyAndSet, enabled, state.status]);
 
   // ---- 키보드 입력 처리 (DAS/ARR 자동 반복 포함) ----
   useEffect(() => {
-    let dasTimeout: number | undefined;
-    let arrInterval: number | undefined;
-    let currentRepeatAction: RepeatableAction | null = null;
-
-    const clearRepeat = () => {
-      if (dasTimeout !== undefined) window.clearTimeout(dasTimeout);
-      if (arrInterval !== undefined) window.clearInterval(arrInterval);
-      dasTimeout = undefined;
-      arrInterval = undefined;
-      currentRepeatAction = null;
+    type Axis = "horizontal" | "down";
+    const timers: Record<Axis, { das?: number; arr?: number; action?: RepeatableAction }> = { horizontal: {}, down: {} };
+    const held: string[] = [];
+    const axisFor = (action: RepeatableAction): Axis => action === "SOFT_DROP" ? "down" : "horizontal";
+    const stop = (axis: Axis) => {
+      window.clearTimeout(timers[axis].das);
+      window.clearInterval(timers[axis].arr);
+      timers[axis] = {};
     };
-
-    // playSound: ARR 자동 반복(35ms 간격)으로 호출될 때도 매번 소리를 내면, 소리 길이가
-    // 반복 간격보다 길어 같은 톤이 계속 겹쳐 울리며 음질이 깨진 것처럼 들린다.
-    // 그래서 키를 처음 누른 순간에만 소리를 내고, 그 이후 자동 반복 이동은 무음으로 처리한다.
-    const dispatchRepeatable = (action: RepeatableAction, playSound: boolean) => {
-      if (action === "MOVE_LEFT") {
-        applyAndSet({ type: "MOVE_LEFT" });
-        if (playSound) soundsRef.current?.move();
-      } else if (action === "MOVE_RIGHT") {
-        applyAndSet({ type: "MOVE_RIGHT" });
-        if (playSound) soundsRef.current?.move();
-      } else {
-        applyAndSet({ type: "SOFT_DROP" });
-        if (playSound) soundsRef.current?.softDrop();
+    const clear = () => { stop("horizontal"); stop("down"); held.length = 0; };
+    const playable = () => enabledRef.current && !document.hidden && stateRef.current.status === "playing";
+    const fire = (action: RepeatableAction, sound: boolean) => {
+      if (!playable()) return;
+      applyAndSet({ type: action });
+      if (sound) {
+        if (action === "SOFT_DROP") soundsRef.current?.softDrop();
+        else soundsRef.current?.move();
       }
     };
-
-    const startRepeat = (action: RepeatableAction) => {
-      if (currentRepeatAction === action) return;
-      clearRepeat();
-      currentRepeatAction = action;
-      dispatchRepeatable(action, true);
-      dasTimeout = window.setTimeout(() => {
-        arrInterval = window.setInterval(() => dispatchRepeatable(action, false), ARR_INTERVAL_MS);
+    const repeat = (action: RepeatableAction) => {
+      const axis = axisFor(action);
+      stop(axis);
+      timers[axis].action = action;
+      fire(action, true);
+      timers[axis].das = window.setTimeout(() => {
+        timers[axis].arr = window.setInterval(() => fire(action, false), ARR_INTERVAL_MS);
       }, DAS_DELAY_MS);
     };
-
     const onKeyDown = (event: KeyboardEvent) => {
-      const repeatable = resolveRepeatableAction(event.code);
-      if (repeatable) {
+      const target = event.target;
+      if (!enabledRef.current || document.hidden || event.defaultPrevented ||
+          (target instanceof Element && target.closest('input,select,textarea,button,[contenteditable="true"],[role="dialog"]')) ||
+          document.querySelector('[role="dialog"]')) return;
+      if ((event.code === "Escape" || event.code === "KeyP") && !event.repeat) {
+        event.preventDefault(); clear(); togglePause(); return;
+      }
+      if (!playable() || event.repeat) return;
+      const action = resolveRepeatableAction(event.code);
+      if (action) {
         event.preventDefault();
-        if (!event.repeat) startRepeat(repeatable);
-        return;
+        if (held.includes(event.code)) return;
+        held.push(event.code); repeat(action); return;
       }
-
-      // OS의 키 반복(auto-repeat)은 단발성 액션(회전/하드드롭/홀드/일시정지)에서는 무시한다
-      if (event.repeat) return;
-
       switch (event.code) {
-        case "ArrowUp":
-        case "KeyX":
-          event.preventDefault();
-          applyAndSet({ type: "ROTATE_CW" });
-          soundsRef.current?.rotate();
-          break;
+        case "ArrowUp": case "KeyX":
+          event.preventDefault(); applyAndSet({ type: "ROTATE_CW" }); soundsRef.current?.rotate(); break;
         case "KeyZ":
-          event.preventDefault();
-          applyAndSet({ type: "ROTATE_CCW" });
-          soundsRef.current?.rotate();
-          break;
+          event.preventDefault(); applyAndSet({ type: "ROTATE_CCW" }); soundsRef.current?.rotate(); break;
         case "KeyA":
+          event.preventDefault(); applyAndSet({ type: "ROTATE_180" }); soundsRef.current?.rotate(); break;
+        case "Space": event.preventDefault(); triggerHardDrop(); break;
+        case "KeyC": case "ShiftLeft": case "ShiftRight":
           event.preventDefault();
-          applyAndSet({ type: "ROTATE_180" });
-          soundsRef.current?.rotate();
-          break;
-        case "Space":
-          event.preventDefault();
-          triggerHardDrop();
-          break;
-        case "KeyC":
-        case "ShiftLeft":
-        case "ShiftRight":
-          event.preventDefault();
-          applyAndSet({ type: "HOLD" });
-          soundsRef.current?.hold();
-          break;
-        case "Escape":
-        case "KeyP":
-          event.preventDefault();
-          togglePause();
-          break;
-        default:
+          if (stateRef.current.hold.canHold) { applyAndSet({ type: "HOLD" }); soundsRef.current?.hold(); }
           break;
       }
     };
-
     const onKeyUp = (event: KeyboardEvent) => {
-      const repeatable = resolveRepeatableAction(event.code);
-      if (repeatable && currentRepeatAction === repeatable) {
-        clearRepeat();
+      const index = held.indexOf(event.code);
+      if (index >= 0) held.splice(index, 1);
+      const action = resolveRepeatableAction(event.code);
+      if (!action || timers[axisFor(action)].action !== action) return;
+      stop(axisFor(action));
+      // 좌우 동시 입력은 마지막 키 우선, 해제하면 아직 누른 반대 키로 복귀한다.
+      if (axisFor(action) === "horizontal" && playable()) {
+        const other = [...held].reverse().find(code => code === "ArrowLeft" || code === "ArrowRight");
+        if (other) repeat(resolveRepeatableAction(other)!);
       }
     };
-
+    const suspend = () => { clear(); applyAndSet({ type: "PAUSE" }); };
+    const visibility = () => { if (document.hidden) suspend(); };
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener("keyup", onKeyUp);
+    window.addEventListener("blur", suspend);
+    document.addEventListener("visibilitychange", visibility);
+    if (!enabled && state.status === "playing") applyAndSet({ type: "PAUSE" });
     return () => {
-      window.removeEventListener("keydown", onKeyDown);
-      window.removeEventListener("keyup", onKeyUp);
-      clearRepeat();
+      clear(); window.removeEventListener("keydown", onKeyDown); window.removeEventListener("keyup", onKeyUp);
+      window.removeEventListener("blur", suspend); document.removeEventListener("visibilitychange", visibility);
     };
-  }, [applyAndSet, togglePause, triggerHardDrop]);
-
-  // ---- 탭 비활성화(포커스 아웃) 시 자동 일시정지 (PRD 4.2) ----
-  useEffect(() => {
-    const onVisibilityChange = () => {
-      if (document.hidden && stateRef.current.status === "playing") {
-        applyAndSet({ type: "PAUSE" });
-      }
-    };
-    document.addEventListener("visibilitychange", onVisibilityChange);
-    return () => document.removeEventListener("visibilitychange", onVisibilityChange);
-  }, [applyAndSet]);
+  }, [applyAndSet, togglePause, triggerHardDrop, enabled, state.status]);
 
   // ---- 점수 이벤트 -> 효과음 트리거 (lastScoreEvent 참조가 실제로 바뀔 때만 실행) ----
   useEffect(() => {

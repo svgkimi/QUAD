@@ -16,5 +16,4 @@ export * from "./lineClear";
 export * from "./scoring";
 export * from "./hold";
 export * from "./rng";
-export * from "./battle";
 export * from "./gameEngine";

@@ -14,7 +14,7 @@
  * 화면 흔들림, 글로우 효과를 매 프레임 갱신해도 리플로우 비용이 없다.
  */
 
-import { memo, useEffect, useRef, useState } from "react";
+import { memo, useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
   BOARD_BUFFER_HEIGHT,
   BOARD_VISIBLE_HEIGHT,
@@ -183,8 +183,8 @@ function GameBoardComponent({
   }, [hardDropTrail]);
 
   // ---- responsive 모드: 부모 컨테이너의 실제 가용 폭/높이를 측정해 10:20 비율을 유지한 채
-  // 들어갈 수 있는 최대 크기를 계산한다 (object-fit 없이 캔버스 CSS 크기 자체를 이 값으로 고정) ----
-  useEffect(() => {
+  // 들어갈 수 있는 최대 크기를 계산한다. 새 판 첫 페인트 전에 맞춰 패드 침범을 막는다.
+  useLayoutEffect(() => {
     if (!responsive) {
       setResponsiveSize(null);
       return undefined;
@@ -397,6 +397,8 @@ function GameBoardComponent({
     >
       <canvas
         ref={canvasRef}
+        role="img"
+        aria-label={`쿼드 게임판, 10열 20행. ${status === "gameover" ? "게임 종료." : active ? `현재 ${active.type} 블록, ${active.position.x + 1}열, ${Math.max(0, active.position.y - 19)}행. ${ghost ? `낙하 예상 ${Math.max(0, ghost.position.y - 19)}행.` : ""}` : "시작 대기 중."}`}
         style={
           responsive
             // 측정된 실제 크기를 캔버스 CSS 크기 자체로 그대로 사용한다 - object-fit이 아니므로
@@ -408,8 +410,8 @@ function GameBoardComponent({
               : { width: "100%", height: "auto", aspectRatio: `${BOARD_WIDTH} / ${BOARD_VISIBLE_HEIGHT}` }
             : { width: BOARD_PIXEL_WIDTH, height: BOARD_PIXEL_HEIGHT }
         }
-        className="block rounded-xl border border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.5)]"
-      />
+        className="block rounded-xl border border-slate-400/70 shadow-[0_0_0_1px_rgba(148,163,184,0.18),0_0_40px_rgba(0,0,0,0.5)]"
+      >블록을 이동·회전해 가로줄을 채우세요. 조작 안내에서 키보드와 터치 버튼을 확인할 수 있어요.</canvas>
       {status === "paused" && (
         // PRD 3.1: 일시정지 중 필드는 블러 처리되어 노출되지 않는다. 실제 텍스트/버튼은
         // App.tsx의 PauseOverlay가 화면 전체 레이어로 그 위에 별도 표시한다.

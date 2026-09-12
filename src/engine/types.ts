@@ -45,12 +45,9 @@ export interface Position {
 }
 
 /**
- * 보드의 한 칸(셀) 상태. 비어있으면 null, 채워져 있으면 해당 테트리미노 타입,
- * 대전(versus) 모드에서 상대방에게 공격받아 올라온 가비지 라인 칸이면 "GARBAGE".
- * 충돌/줄 완성 판정은 대부분 `cell !== null` 형태로 이루어지므로 GARBAGE도 자동으로
- * "차있음"으로 취급된다 (board.ts, lineClear.ts 참고).
+ * 보드의 한 칸(셀) 상태. 비어 있으면 null, 채워져 있으면 해당 블록 타입.
  */
-export type BoardCell = TetrominoType | "GARBAGE" | null;
+export type BoardCell = TetrominoType | null;
 
 /** 보드 전체: row-major 2차원 배열. board[y][x] 로 접근 */
 export type Board = readonly BoardCell[][];
@@ -136,7 +133,12 @@ export interface LockDelayState {
  * 이 인터페이스는 UI 레이어와 QA 테스트가 함께 의존하는 핵심 계약이다.
  * 절대 이 구조를 임의로 mutate 하지 말고, gameEngine.ts 의 함수들을 통해서만 갱신할 것.
  */
+export type PieceRandomizer = "bag" | "independent";
+
 export interface EngineState {
+  readonly randomizer?: PieceRandomizer;
+  /** 캠페인 한 판의 고정 낙하 간격. 무한 모드에는 없으며 기존 레벨 규칙을 따른다. */
+  readonly gravityIntervalMs?: number;
   readonly status: GameStatus;
   readonly board: Board;
   /** 현재 조작 중인 피스. Ready/GameOver 상태 등에서는 null 일 수 있다 */
@@ -164,14 +166,14 @@ export interface EngineState {
   readonly gravityElapsedMs: number;
   /** 가장 최근 락에서 발생한 점수 이벤트 (UI 연출 트리거용, 없으면 null) */
   readonly lastScoreEvent: ScoreEvent | null;
-  /** 7-bag 셔플 등에 사용되는 난수 함수. 기본은 Math.random, 테스트 시 시드 함수로 교체 가능 */
-  readonly random: RandomFn;
+  /** 7-bag PRNG의 32비트 숫자 커서. 이전 상태를 변경하지 않고 진행한다. */
+  readonly rngState: number;
 }
 
 /** gameEngine.ts 의 applyAction 이 받는 액션(디스패치) 타입 */
 export type EngineAction =
-  | { readonly type: "START"; readonly seed?: number }
-  | { readonly type: "RESTART"; readonly seed?: number }
+  | { readonly type: "START"; readonly seed?: number; readonly setup?: GameSetup }
+  | { readonly type: "RESTART"; readonly seed?: number; readonly setup?: GameSetup }
   | { readonly type: "PAUSE" }
   | { readonly type: "RESUME" }
   | { readonly type: "MOVE_LEFT" }
@@ -182,10 +184,12 @@ export type EngineAction =
   | { readonly type: "ROTATE_CCW" }
   | { readonly type: "ROTATE_180" }
   | { readonly type: "HOLD" }
-  | { readonly type: "TICK"; readonly deltaMs: number }
-  /**
-   * 대전(versus) 모드 전용 액션: 상대방의 공격으로 가비지 라인을 수신했을 때 디스패치한다.
-   * `lines`는 삽입할 가비지 행 개수. gap(구멍) 위치는 리듀서(gameEngine.ts)가 내부적으로
-   * 결정하므로 이 액션 자체에는 포함하지 않는다.
-   */
-  | { readonly type: "RECEIVE_GARBAGE"; readonly lines: number };
+  | { readonly type: "TICK"; readonly deltaMs: number };
+
+/** 새 게임 시작 시에만 적용하는 준비 보드/블록 순서. 진행 중 보드를 덮어쓰는 액션은 제공하지 않는다. */
+export interface GameSetup {
+  readonly randomizer?: PieceRandomizer;
+  readonly board: Board;
+  readonly sequence: readonly TetrominoType[];
+  readonly gravityIntervalMs: number;
+}

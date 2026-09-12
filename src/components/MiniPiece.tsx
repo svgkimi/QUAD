@@ -36,7 +36,8 @@ function MiniPieceComponent({ type, cellSize = 18, dimmed = false }: MiniPiecePr
     <div
       className="relative"
       style={{ width: size, height: size, opacity: dimmed ? 0.35 : 1 }}
-      aria-hidden={type === null}
+      role="img"
+      aria-label={type ? `${type} 블록${dimmed ? " (보관 교체 불가)" : ""}` : "빈 보관 슬롯"}
     >
       {type &&
         cells.map((cell, index) => (

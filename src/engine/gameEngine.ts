@@ -17,12 +17,11 @@
  */
 
 import { checkCollision, createEmptyBoard, lockPieceToBoard } from "./board";
-import { addGarbageLines } from "./battle";
 import { refillQueue, takeNextPiece } from "./bag";
 import { calculateGhostPiece, hardDrop, moveDown, moveHorizontal } from "./movement";
 import { processLineClear } from "./lineClear";
 import { computeHoldSwap } from "./hold";
-import { createSeededRandom } from "./rng";
+import { nextRandom } from "./rng";
 import { detectTSpin, tryRotate } from "./rotation";
 import { getSpawnX, getSpawnY } from "./tetrominoes";
 import {
@@ -35,15 +34,14 @@ import {
   SOFT_DROP_SCORE_PER_CELL,
 } from "./scoring";
 import {
-  BOARD_TOTAL_HEIGHT,
-  BOARD_WIDTH,
+  ALL_TETROMINO_TYPES, BOARD_TOTAL_HEIGHT, BOARD_WIDTH, type GameSetup,
+  type PieceRandomizer,
   type ActivePiece,
   type Board,
   type EngineAction,
   type EngineState,
   type HoldState,
   type LockDelayState,
-  type RandomFn,
   type RotationDirection,
   type ScoreEvent,
   type TetrominoType,
@@ -69,15 +67,20 @@ function createSpawnedPiece(type: TetrominoType): ActivePiece {
 
 /**
  * 초기 EngineState를 생성한다. (status: "ready", 빈 보드, 활성 피스 없음)
- * 입력: options.seed(시드값, 있으면 결정론적 난수 사용) 또는 options.random(직접 주입할 RandomFn)
+ * 입력: options.seed(시드값, 생략하면 초기화 경계에서 생성)
  * 출력: 새 EngineState
  */
-export function createInitialState(options?: { seed?: number; random?: RandomFn }): EngineState {
-  const random =
-    options?.random ?? (options?.seed !== undefined ? createSeededRandom(options.seed) : Math.random);
-  const pieceQueue = refillQueue([], random);
+export function createInitialState(options?: { seed?: number; randomizer?: PieceRandomizer }): EngineState {
+  let rngState = (options?.seed ?? Math.floor(Math.random() * 4294967296)) >>> 0;
+  const random = () => {
+    const next = nextRandom(rngState);
+    rngState = next.state;
+    return next.value;
+  };
+  const pieceQueue = refillQueue([], random, options?.randomizer);
 
   return {
+    ...(options?.randomizer ? { randomizer: options.randomizer } : {}),
     status: "ready",
     board: createEmptyBoard(),
     active: null,
@@ -93,7 +96,7 @@ export function createInitialState(options?: { seed?: number; random?: RandomFn 
     backToBack: false,
     gravityElapsedMs: 0,
     lastScoreEvent: null,
-    random,
+    rngState,
   };
 }
 
@@ -118,7 +121,7 @@ function updateLockDelayOnAction(
 ): LockDelayState {
   const grounded = isGrounded(board, piece);
   if (!grounded) {
-    return { isActive: false, elapsedMs: 0, resetCount: current.resetCount };
+    return { ...current, isActive: false };
   }
   if (current.resetCount >= MAX_LOCK_RESETS) {
     return { isActive: true, elapsedMs: current.elapsedMs, resetCount: current.resetCount };
@@ -157,8 +160,19 @@ function withSpawnedPiece(
  * 입력: state / 출력: 새 EngineState (게임 오버 시 status: "gameover")
  */
 function spawnNext(state: EngineState): EngineState {
-  const { piece, queue } = takeNextPiece(state.pieceQueue, state.random);
-  return withSpawnedPiece(state, piece, { ...state.hold, canHold: true }, queue);
+  const { piece, queue, rngState } = consumeNext(state);
+  return withSpawnedPiece({ ...state, rngState }, piece, { ...state.hold, canHold: true }, queue);
+}
+
+/** 입력: 엔진 상태 / 출력: 다음 피스·큐·난수 상태. 이전 RNG를 소비하지 않는다. */
+function consumeNext(state: EngineState) {
+  let rngState = state.rngState;
+  const next = takeNextPiece(state.pieceQueue, () => {
+    const random = nextRandom(rngState);
+    rngState = random.state;
+    return random.value;
+  }, state.randomizer);
+  return { ...next, rngState };
 }
 
 /**
@@ -230,7 +244,7 @@ function applySoftDrop(state: EngineState): EngineState {
   if (state.status !== "playing" || !state.active) return state;
   const result = moveDown(state.board, state.active);
   if (!result.moved) {
-    return { ...state, lockDelay: updateLockDelayOnAction(state.board, state.active, state.lockDelay) };
+    return state;
   }
   return {
     ...state,
@@ -250,7 +264,7 @@ function applyHardDrop(state: EngineState): EngineState {
     ...state,
     active: piece,
     score: state.score + calculateDropScore(droppedRows, HARD_DROP_SCORE_PER_CELL),
-    lastActionWasRotation: false,
+    lastActionWasRotation: droppedRows === 0 && state.lastActionWasRotation,
   };
   return lockActivePiece(stateAfterDrop);
 }
@@ -275,8 +289,8 @@ function applyHold(state: EngineState): EngineState {
   const swap = computeHoldSwap(state.active.type, state.hold.type);
 
   if (swap.shouldConsumeFromQueue) {
-    const { piece, queue } = takeNextPiece(state.pieceQueue, state.random);
-    return withSpawnedPiece(state, piece, { type: swap.newHoldType, canHold: false }, queue);
+    const { piece, queue, rngState } = consumeNext(state);
+    return withSpawnedPiece({ ...state, rngState }, piece, { type: swap.newHoldType, canHold: false }, queue);
   }
 
   return withSpawnedPiece(
@@ -288,52 +302,18 @@ function applyHold(state: EngineState): EngineState {
 }
 
 /**
- * 대전(versus) 모드 전용: 상대방으로부터 가비지 라인을 수신했을 때 처리하는 함수.
- * gap(구멍) 위치는 7-bag용 `state.random`과는 완전히 분리된 순수 `Math.random()`으로 뽑는다 —
- * 두 플레이어가 동일 시드로 같은 피스 시퀀스를 공유해야 하므로, `state.random`을 여기서
- * 소비하면 그 소비 횟수가 플레이어마다 달라져 이후 피스 시퀀스가 어긋나게 된다.
- * 입력: state, lines(삽입할 가비지 행 수) / 출력: 새 EngineState
- * - status가 "playing"이 아니면 아무 변화 없이 그대로 반환한다.
- * - 활성 피스가 있다면 스택이 밀려 올라간 만큼 위치(y)도 함께 밀어 올린다.
- * - 밀어 올린 뒤 활성 피스가 다른 블록과 겹치면(Block Out) 즉시 게임오버 처리한다.
- */
-function applyReceiveGarbage(state: EngineState, lines: number): EngineState {
-  if (state.status !== "playing") return state;
-  if (lines <= 0) return state;
-
-  // addGarbageLines는 내부적으로 count를 BOARD_TOTAL_HEIGHT로 clamp한다.
-  // 활성 피스 위치도 "실제로 스택이 밀려 올라간 만큼"만 이동해야 하므로,
-  // 여기서도 동일하게 clamp된 값을 사용해야 한다 — 그렇지 않으면 lines가
-  // 보드 전체 높이를 초과할 때 board 이동량과 piece 이동량이 어긋난다.
-  const appliedLines = Math.min(lines, BOARD_TOTAL_HEIGHT);
-  const gapColumn = Math.floor(Math.random() * BOARD_WIDTH);
-  const nextBoard = addGarbageLines(state.board, lines, gapColumn);
-
-  if (!state.active) {
-    return { ...state, board: nextBoard };
-  }
-
-  const movedActive: ActivePiece = {
-    ...state.active,
-    position: { ...state.active.position, y: state.active.position.y - appliedLines },
-  };
-
-  const gameOver = checkCollision(nextBoard, movedActive);
-
-  return {
-    ...state,
-    board: nextBoard,
-    active: movedActive,
-    status: gameOver ? "gameover" : state.status,
-  };
-}
-
-/**
  * 게임 시작/재시작 처리: 완전히 새로운 상태를 만들고 첫 피스를 스폰한다.
  * 입력: seed(선택, 결정론적 테스트용) / 출력: 새 EngineState (status: "playing" 또는 즉시 "gameover")
  */
-function startGame(seed?: number): EngineState {
-  const fresh = createInitialState(seed !== undefined ? { seed } : undefined);
+function startGame(seed?: number, setup?: GameSetup): EngineState {
+  const fresh = createInitialState({ seed, randomizer: setup?.randomizer });
+  if (setup) {
+    const valid = (setup.randomizer === undefined || setup.randomizer === "bag" || setup.randomizer === "independent") && setup.board.length === BOARD_TOTAL_HEIGHT && setup.board.every(row => row.length === BOARD_WIDTH && row.every(cell => cell === null || ALL_TETROMINO_TYPES.includes(cell))) &&
+      setup.sequence.length <= 70 && setup.sequence.every(piece => ALL_TETROMINO_TYPES.includes(piece)) &&
+      Number.isFinite(setup.gravityIntervalMs) && setup.gravityIntervalMs >= 50 && setup.gravityIntervalMs <= 2000;
+    if (!valid) throw new Error("Invalid game setup");
+    return spawnNext({ ...fresh, board: setup.board.map(row => [...row]), pieceQueue: [...setup.sequence, ...fresh.pieceQueue], gravityIntervalMs: setup.gravityIntervalMs });
+  }
   return spawnNext(fresh);
 }
 
@@ -342,34 +322,28 @@ function startGame(seed?: number): EngineState {
  * 입력: state, deltaMs(이전 tick 이후 경과 시간) / 출력: 새 EngineState
  */
 export function tick(state: EngineState, deltaMs: number): EngineState {
-  if (state.status !== "playing" || !state.active) return state;
-  const grounded = isGrounded(state.board, state.active);
-
-  if (!grounded) {
-    const gravityElapsedMs = state.gravityElapsedMs + deltaMs;
-    const interval = calculateGravityIntervalMs(state.level);
-    if (gravityElapsedMs < interval) {
-      return { ...state, gravityElapsedMs };
+  if (state.status !== "playing" || !state.active || !Number.isFinite(deltaMs) || deltaMs <= 0) return state;
+  let next = state;
+  let remaining = deltaMs;
+  const interval = state.gravityIntervalMs ?? calculateGravityIntervalMs(state.level);
+  // 한 피스의 낙하/고정까지만 진행한다. 남은 큰 delta를 새 피스에 전달하지 않는다.
+  while (next.active) {
+    if (isGrounded(next.board, next.active)) {
+      const elapsedMs = next.lockDelay.elapsedMs + remaining;
+      if (elapsedMs >= LOCK_DELAY_MS) return lockActivePiece(next);
+      return { ...next, lockDelay: { ...next.lockDelay, isActive: true, elapsedMs } };
     }
-    const result = moveDown(state.board, state.active);
-    const movedPiece = result.piece;
-    const nowGrounded = isGrounded(state.board, movedPiece);
-    return {
-      ...state,
-      active: movedPiece,
-      gravityElapsedMs: 0,
-      lastActionWasRotation: false,
-      lockDelay: nowGrounded
-        ? { isActive: true, elapsedMs: 0, resetCount: state.lockDelay.resetCount }
-        : createEmptyLockDelay(),
+    const untilFall = Math.max(0, interval - next.gravityElapsedMs);
+    if (remaining < untilFall) return { ...next, gravityElapsedMs: next.gravityElapsedMs + remaining };
+    remaining -= untilFall;
+    const moved = moveDown(next.board, next.active).piece;
+    next = {
+      ...next, active: moved, gravityElapsedMs: 0, lastActionWasRotation: false,
+      lockDelay: { ...next.lockDelay, isActive: isGrounded(next.board, moved) },
     };
+    if (remaining === 0) return next;
   }
-
-  const elapsedMs = state.lockDelay.elapsedMs + deltaMs;
-  if (elapsedMs >= LOCK_DELAY_MS) {
-    return lockActivePiece(state);
-  }
-  return { ...state, lockDelay: { ...state.lockDelay, isActive: true, elapsedMs } };
+  return next;
 }
 
 /**
@@ -381,7 +355,7 @@ export function applyAction(state: EngineState, action: EngineAction): EngineSta
   switch (action.type) {
     case "START":
     case "RESTART":
-      return startGame(action.seed);
+      return startGame(action.seed ?? state.rngState, action.setup);
     case "PAUSE":
       return state.status === "playing" ? { ...state, status: "paused" } : state;
     case "RESUME":
@@ -404,8 +378,6 @@ export function applyAction(state: EngineState, action: EngineAction): EngineSta
       return applyHold(state);
     case "TICK":
       return tick(state, action.deltaMs);
-    case "RECEIVE_GARBAGE":
-      return applyReceiveGarbage(state, action.lines);
     default: {
       const exhaustiveCheck: never = action;
       return exhaustiveCheck;

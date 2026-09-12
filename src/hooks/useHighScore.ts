@@ -1,69 +1,61 @@
-/**
- * useHighScore.ts
- * -----------------------------------------------------------------------
- * 하이스코어를 LocalStorage에 저장/조회하는 훅. 게임 엔진과 무관한 영속성 레이어.
- */
-
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getItem, setItem } from "../lib/persistentStorage";
 
 const STORAGE_KEY = "quad:high-score";
+type SaveStatus = "loading" | "saved" | "saving" | "error";
 
-/** LocalStorage에서 저장된 하이스코어를 읽어온다. 없거나 잘못된 값이면 0을 반환한다 */
-function readStoredHighScore(): number {
-  if (typeof window === "undefined") return 0;
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    const parsed = raw ? Number.parseInt(raw, 10) : 0;
-    return Number.isFinite(parsed) && parsed > 0 ? parsed : 0;
-  } catch {
-    return 0;
-  }
+/** 입력: 저장 문자열 / 출력: 유효한 비음수 정수 기록. 손상 값은 0. */
+function parseScore(raw: string | null): number {
+  const value = raw === null ? 0 : Number(raw);
+  return Number.isSafeInteger(value) && value >= 0 ? value : 0;
 }
 
-/** useHighScore 훅의 반환 타입 */
+/** 입력: 없음 / 출력: 일반 웹 동기 초기 기록. SDK 실제 기록은 비동기로 병합한다. */
+function readInitialScore(): number {
+  try { return parseScore(window.localStorage.getItem(STORAGE_KEY)); } catch { return 0; }
+}
+
 export interface UseHighScoreResult {
   readonly highScore: number;
-  /** 이번 판의 최종 점수를 제출한다. 기존 최고기록을 넘었으면 갱신하고 true를 반환한다 */
+  readonly saveStatus: SaveStatus;
   readonly submitScore: (score: number) => boolean;
 }
 
-/**
- * 하이스코어 상태 훅.
- * 입력: 없음 / 출력: { highScore(현재 최고 점수), submitScore(점수 제출 함수) }
- */
+/** 입력: 없음 / 출력: 최고기록·제출 함수·저장 상태. 초기 읽기 이전에는 낮은 값을 쓰지 않는다. */
 export function useHighScore(): UseHighScoreResult {
-  const [highScore, setHighScore] = useState<number>(readStoredHighScore);
-  // 최신 highScore 값을 동기적으로 비교하기 위한 ref (setState 콜백의 비동기 실행 타이밍에 의존하지 않기 위함)
-  const highScoreRef = useRef<number>(highScore);
-  highScoreRef.current = highScore;
-
-  // 앱인토스 환경에서는 위 동기 초기값이 LocalStorage가 아닌 SDK Storage의 실제 값과 다를 수
-  // 있으므로, 마운트 시 한 번 비동기로 다시 조회해 더 높은 값이 있으면 보정한다. 일반 웹
-  // 배포(persistentStorage가 내부적으로 LocalStorage를 그대로 사용)에서는 사실상 동일한 값이라
-  // 아무 변화가 없다.
+  const [highScore, setHighScore] = useState(readInitialScore);
+  const [saveStatus, setSaveStatus] = useState<SaveStatus>("loading");
+  const best = useRef(highScore);
+  const ready = useRef(false);
+  const mounted = useRef(false);
+  const submitted = useRef(false);
+  const writeVersion = useRef(0);
+  const persist = useCallback(() => {
+    const version = ++writeVersion.current;
+    setSaveStatus("saving");
+    void setItem(STORAGE_KEY, String(best.current)).then(ok => {
+      if (mounted.current && writeVersion.current === version) setSaveStatus(ok === false ? "error" : "saved");
+    }).catch(() => { if (mounted.current && writeVersion.current === version) setSaveStatus("error"); });
+  }, []);
   useEffect(() => {
     let cancelled = false;
-    void getItem(STORAGE_KEY).then((raw) => {
-      if (cancelled || raw === null) return;
-      const parsed = Number.parseInt(raw, 10);
-      if (Number.isFinite(parsed) && parsed > highScoreRef.current) {
-        highScoreRef.current = parsed;
-        setHighScore(parsed);
-      }
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  const submitScore = useCallback((score: number): boolean => {
-    if (score <= highScoreRef.current) return false;
-    highScoreRef.current = score;
+    mounted.current = true;
+    void getItem(STORAGE_KEY).then(raw => {
+      if (cancelled) return;
+      best.current = Math.max(best.current, parseScore(raw));
+      setHighScore(best.current);
+      ready.current = true;
+      if (submitted.current) persist(); else setSaveStatus("saved");
+    }).catch(() => { if (!cancelled) setSaveStatus("error"); });
+    return () => { cancelled = true; mounted.current = false; };
+  }, [persist]);
+  const submitScore = useCallback((score: number) => {
+    if (!Number.isSafeInteger(score) || score <= best.current) return false;
+    best.current = score;
+    submitted.current = true;
     setHighScore(score);
-    void setItem(STORAGE_KEY, String(score));
+    if (ready.current) persist();
     return true;
-  }, []);
-
-  return { highScore, submitScore };
+  }, [persist]);
+  return { highScore, saveStatus, submitScore };
 }

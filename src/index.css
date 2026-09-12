@@ -12,6 +12,8 @@
   --ait-safe-right: 0px;
   --ait-safe-bottom: 0px;
   --ait-safe-left: 0px;
+  --control-width: clamp(64px, 18vw, 80px);
+  --control-height: clamp(48px, 7dvh, 64px);
 }
 
 html,
@@ -21,4 +23,37 @@ body,
   height: 100dvh;
   margin: 0;
   background-color: #0a0a0f;
+}
+button:focus-visible, input:focus-visible, select:focus-visible {
+  outline: 2px solid #a5f3fc;
+  outline-offset: 3px;
+}
+
+/* 히트 영역은 고정하고 내용만 눌러 터치 캡처/동시 입력을 유지한다. */
+.quad-control { width: var(--control-width); height: var(--control-height); }
+.mobile-playground { position: relative; }
+.play-pad-region { position: relative; }
+.custom-control-surface { position: absolute; inset: 0 6px; z-index: 20; overflow: hidden; }
+.custom-control-spacer { height: calc(2 * var(--control-height) + clamp(8px, 2vw, 12px) + 12px); }
+.control-editor-pad { height: calc(2 * var(--control-height) + clamp(8px, 2vw, 12px) + 12px); }
+
+/* WKWebView/Safari의 길게 누르기 선택·복사 팝업 차단. 폼 입력은 예외다. */
+#root, #root * { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+#root input, #root textarea, #root [contenteditable="true"] { -webkit-user-select: text; user-select: text; -webkit-touch-callout: default; }
+.quad-control > * { pointer-events: none; transition: transform 75ms ease-out; }
+.quad-control[data-pressed="true"] > * { transform: translateY(2px) scale(0.94); }
+.quad-control[data-pressed="true"] {
+  background: #405564;
+  border-color: #a5f3fc;
+  box-shadow: inset 0 2px 7px rgb(0 0 0 / 55%), 0 1px 0 rgb(255 255 255 / 20%);
+}
+@media (prefers-reduced-motion: reduce) {
+  .quad-control, .quad-control > * { transition: none; }
+  .quad-control[data-pressed="true"] > * { transform: none; }
+}
+
+@media (min-width: 600px) and (max-height: 500px) {
+  .mobile-playground { position: relative; }
+  .mobile-playground .play-board-region { width: calc(100% - 320px); }
+  .mobile-playground .play-pad-region { position: absolute; bottom: 0; left: 0; right: 0; }
 }

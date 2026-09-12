@@ -5,6 +5,9 @@
  * 필드가 어두워지고 "GAME OVER" 텍스트, 최종 점수, 최고 기록 갱신 여부, 재시작/메인 버튼을 보여준다.
  */
 
+import { useId, useRef } from "react";
+import { useModalFocus } from "./Modal";
+
 /** GameOverScreen props */
 export interface GameOverScreenProps {
   readonly score: number;
@@ -19,10 +22,13 @@ export interface GameOverScreenProps {
  * 입력: score, highScore, isNewHighScore, onRestart, onMainMenu / 출력: JSX
  */
 export function GameOverScreen({ score, highScore, isNewHighScore, onRestart, onMainMenu }: GameOverScreenProps) {
+  const titleId = useId();
+  const root = useRef<HTMLDivElement>(null);
+  useModalFocus(root, onMainMenu);
   return (
-    <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/70 backdrop-blur-md">
+    <div ref={root} role="dialog" aria-modal="true" aria-labelledby={titleId} tabIndex={-1} className="absolute inset-0 z-30 flex items-center justify-center bg-black/70 backdrop-blur-md">
       <div className="flex flex-col items-center gap-4 rounded-2xl border border-white/10 bg-black/50 px-10 py-8">
-        <h2 className="text-4xl font-black tracking-widest text-rose-400 drop-shadow-[0_0_20px_rgba(244,63,94,0.5)]">
+        <h2 id={titleId} className="text-4xl font-black tracking-widest text-rose-400 drop-shadow-[0_0_20px_rgba(244,63,94,0.5)]">
           GAME OVER
         </h2>
         <div className="flex flex-col items-center gap-1">
