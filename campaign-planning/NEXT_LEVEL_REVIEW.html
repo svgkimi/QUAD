@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>QUAD · 다음 스테이지 승인 시안</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#0e1015;color:#f1f2f7;font:15px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}button{font:inherit;cursor:pointer}button:disabled{cursor:default}button:focus-visible,a:focus-visible{outline:3px solid #ffdc63;outline-offset:3px}a{color:#67dfef}header,.review-shell{max-width:1080px;margin:auto;padding:28px}header{border-bottom:1px solid #31343f}.wordmark{font-size:38px;font-weight:950;letter-spacing:-2px;background:linear-gradient(#afeef7,#ddaafa,#ffd35e);color:transparent;background-clip:text}h1{font-size:26px;line-height:1.3;margin:8px 0 10px}header p{margin:0;color:#b5b7c4;max-width:750px}.status{color:#f8d578;font-size:13px}.review-nav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:28px}.review-nav button,.shape-options button,.step-button{min-height:44px;border:1px solid #4b4e5b;border-radius:8px;background:#191c24;color:#d5d7e0;padding:8px 14px}.review-nav button[aria-pressed=true],.shape-options button[aria-pressed=true]{background:#5ddeee;color:#101319;border-color:#5ddeee}.review-layout{display:grid;grid-template-columns:minmax(240px,1fr) minmax(280px,393px);gap:44px;align-items:start}.notes h2{font-size:22px;margin:0 0 14px}.notes p{color:#b8bccb}.notes ul{padding-left:21px}.notes li{margin:12px 0}.notes .boundary{margin-top:28px;padding-top:20px;border-top:1px solid #363943}.notes strong{color:#eef1f8}.phone{position:relative;max-width:393px;width:100%;height:759px;background:#0a0a0f;border:1px solid #343642;border-radius:22px;overflow:hidden;display:flex;flex-direction:column;color:#f1f2f7}.game-hud{height:54px;flex:none;margin:4px 10px 0;border:1px solid #3b3d47;border-radius:12px;display:flex;align-items:center;justify-content:space-between;padding:0 4px;background:#14151c}.game-hud button{background:none;color:inherit;border:0;min-height:44px}.icon-button{width:44px;display:grid;place-items:center;flex:none}.icon-button svg{width:21px;height:21px}.goal-button{min-width:0;flex:1;padding:0;line-height:1.3}.goal-button small{display:block;font-size:11px;color:#c0c2cd}.goal-button strong{display:block;font-size:19px;white-space:nowrap;font-variant-numeric:tabular-nums}.board-zone{position:relative;flex:1;min-height:0;display:flex;justify-content:center;padding:4px 44px 0}.board{height:100%;aspect-ratio:1/2;max-width:100%;position:relative;border:1px solid #78869a;border-radius:12px;background:#0c0d14;overflow:hidden;display:grid;grid-template-columns:repeat(10,1fr);grid-template-rows:repeat(20,1fr)}.cell{position:relative;border-right:1px solid #181a24;border-bottom:1px solid #181a24}.cell.filled:before{content:"";position:absolute;inset:1px;border-radius:3px;background:linear-gradient(#ffffff70,transparent),var(--piece);box-shadow:inset 0 0 0 1px #ffffff28}.cell.target:after{content:"";position:absolute;width:42%;height:42%;top:29%;left:29%;border:2px solid white;transform:rotate(45deg);filter:drop-shadow(0 1px 1px #111)}.cell.ghost:before{content:"";position:absolute;inset:2px;border:2px solid #55dce9;background:#55dce915}.bomb-mark{position:absolute;width:78%;height:78%;left:11%;top:11%;color:#fff;filter:drop-shadow(0 0 2px #151515)}.rail{position:absolute;top:5px;width:39px;font-size:10px;font-weight:600;color:#bfc2ce;letter-spacing:1px;text-align:center}.rail-left{left:2px}.rail-right{right:2px}.mini{height:43px;border:1px solid #50545f;background:#0c0d13;border-radius:6px;margin-top:4px;display:grid;place-content:center}.mini-row{display:flex;gap:1px}.mini-row i{display:block;background:#59d8ed;border-radius:2px;width:6px;height:6px}.pad{height:125px;flex:none;margin:5px 8px 7px;display:flex;justify-content:space-between;gap:8px}.pad-group{width:43%;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:8px}.pad button{background:#13161e;border:1px solid #6d7180;border-radius:16px;color:#edf0f7;font-weight:800;font-size:12px;letter-spacing:1.5px;min-width:0}.pad button svg{width:22px;height:22px;vertical-align:middle}.pad .top-key{grid-column:1/3;width:48%;justify-self:center}.overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:15px;background:#08090de8;z-index:5}.sheet{background:#14151f;border:1px solid #393c48;border-radius:20px;padding:22px;width:100%;max-height:100%;overflow:auto}.sheet h2{font-size:25px;line-height:1.3;margin:0 0 8px}.sheet p{margin:10px 0}.sheet .summary{font-size:21px;font-weight:750;letter-spacing:-.5px}.sheet .muted{color:#b6bac8;font-size:13px}.sheet button{min-height:48px}.primary,.secondary,.plain{width:100%;border-radius:12px;padding:12px 8px;margin-top:10px}.primary{background:#5bdded;color:#070e12;border:1px solid #5bdded;font-weight:750}.secondary{background:#191b24;border:1px solid #5e626f;color:#eef0f6}.plain{background:none;border:0;color:#c8cbd6}.criteria{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:20px 0}.criterion{border-radius:10px;background:#22242e;padding:12px 3px;text-align:center;font-size:11px}.criterion b{display:block;color:#f7d876;font-size:14px;margin-bottom:4px}.rule-tile{display:flex;gap:12px;align-items:center;border-block:1px solid #353846;padding:14px 0;margin:16px 0}.rule-tile svg{width:46px;height:46px;flex:none}.rule-tile span{font-size:13px;color:#d0d3df}.result-stars{display:flex;justify-content:center;gap:10px;margin:25px 0 18px;color:#ffda50}.result-stars svg{width:44px;height:44px}.time-value{text-align:center;font-size:24px;font-weight:750;font-variant-numeric:tabular-nums}.shape-options{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}.shape-grid{width:180px;aspect-ratio:1;display:grid;gap:3px;grid-template-columns:repeat(6,1fr);margin:20px auto;background:#11131b;padding:7px;border:1px solid #424754;border-radius:10px}.shape-grid span{aspect-ratio:1;background:#1c1f29;border-radius:3px}.shape-grid span.on{background:linear-gradient(#ffffff55,transparent),var(--shape-color)}.preview-caption{max-width:393px;font-size:12px;color:#b6bbca;margin-top:12px}.step-button{margin-top:12px}.review-footer{font-size:13px;color:#b0b5c5;border-top:1px solid #363945;padding-top:24px;margin-top:32px}.notes [hidden],.overlay[hidden]{display:none!important}@media(max-width:720px){header,.review-shell{padding:20px 16px}.review-layout{grid-template-columns:1fr;gap:24px}.phone,.preview-caption{margin-inline:auto}.notes{max-width:520px}.notes .boundary{margin-top:16px}.phone{height:740px}.goal-button strong{font-size:16px}.sheet{padding:17px}.sheet h2{font-size:22px}}@media(prefers-reduced-motion:no-preference){button{transition:background .12s,color .12s}.cell{transition:background .12s}}
+</style>
+</head>
+<body>
+<header><div class="wordmark">QUAD</div><div class="status">승인 대기 · 기능 미반영 · 명세 v0.1</div><h1>다음 스테이지, 플레이어가 보게 될 화면</h1><p>목표 블록 제거 · 폭발 블록 · 새로운 형태. 아래는 설명용 장면이며 실제 게임이 아닙니다. 화면을 눌러도 승인되거나 현재 테스트 앱이 바뀌지 않습니다.</p></header>
+<main class="review-shell">
+<nav class="review-nav" aria-label="검토할 화면">
+<button type="button" data-screen="stages" aria-pressed="false">단계 목록</button><button type="button" data-screen="entry" aria-pressed="true">시작 전</button><button type="button" data-screen="play" aria-pressed="false">플레이</button><button type="button" data-screen="blast" aria-pressed="false">폭발 전·후</button><button type="button" data-screen="shapes" aria-pressed="false">새 블록</button><button type="button" data-screen="success" aria-pressed="false">클리어</button><button type="button" data-screen="failure" aria-pressed="false">실패</button>
+</nav>
+<div class="review-layout">
+<section class="notes" aria-live="polite"><h2 id="note-title">한 번에 읽히는 목표</h2><div id="note-body"></div><div id="step-area" hidden><button type="button" id="blast-step" class="step-button">제거 후 보기</button></div><div class="boundary"><strong>이번에 유지할 것</strong><p>어두운 배경, 기존 블록 색과 보드 비율.<br>HOLD / 좌·우 / 내리기 / 회전 / DROP.<br>설명 때문에 게임판을 줄이지 않습니다.</p><a href="GAME_DEVELOPMENT_SPEC_V1.md">기능·처리 순서·승인 항목 전체 명세</a></div></section>
+<div><section class="phone" aria-label="승인용 모바일 화면. 게임 엔진과 연결되지 않은 시안">
+<div class="game-hud"><button type="button" class="icon-button" aria-label="시안 소리 버튼" disabled><svg viewBox="0 0 24 24" fill="none" stroke="#61ddec" stroke-width="2"><path d="M4 9h4l5-4v14l-5-4H4zM17 8q5 4 0 8"/></svg></button><button type="button" class="goal-button" id="goal-button" aria-label="목표와 별 조건 시안 보기"><small>53 / 80 · 타임어택</small><strong id="goal-text">◇ 8개 남음 · 02:15</strong></button><button type="button" class="icon-button" id="pause-button" aria-label="일시정지 시안 보기"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg></button></div>
+<div class="board-zone"><aside class="rail rail-left" aria-label="HOLD 빈 슬롯">HOLD<div class="mini"></div></aside><div class="board" id="board" role="img" aria-label="목표와 폭발 칸이 표시된 10열 20행 보드 시안"></div><aside class="rail rail-right" aria-label="다음 피스 예시">NEXT<div class="mini"><div class="mini-row"><i></i><i></i><i></i><i></i></div></div><div class="mini"><div class="mini-row"><i></i><i></i></div><div class="mini-row"><i></i><i></i></div></div></aside></div>
+<div class="pad" aria-label="현재와 같은 6개 조작 버튼. 이 시안에서는 게임 입력 비활성"><div class="pad-group"><button type="button" class="top-key" disabled>HOLD</button><button type="button" aria-label="왼쪽" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m15 5-7 7 7 7"/></svg></button><button type="button" aria-label="오른쪽" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m9 5 7 7-7 7"/></svg></button></div><div class="pad-group"><button type="button" class="top-key" aria-label="내리기" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m5 9 7 7 7-7"/></svg></button><button type="button" aria-label="회전" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8"><path d="M19 9a8 8 0 1 0 0 7M19 3v7h-7"/></svg></button><button type="button" disabled>DROP</button></div></div>
+<div class="overlay" id="overlay"><div class="sheet" id="sheet"></div></div>
+</section><p class="preview-caption" id="preview-caption">393×759 기준 구성 시안. 목표·시간·별·단계 번호는 제안 수치입니다. 실제 기기 검증 결과가 아닙니다.</p></div>
+</div><footer class="review-footer">검토 방법: 위에서 화면을 선택하세요. 플레이 화면의 목표·정지 버튼은 설명 창을 엽니다. 폭발 전·후와 새 블록 회전은 설명용 시연입니다. 최종 승인은 채팅에서 A1~A7 또는 수정할 항목을 알려주세요.</footer>
+</main>
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const colors = ["#33cde2","#f8d52e","#b37ceb","#4fd28b","#f27984","#689ee5","#f5a05b"];
+  const bomb = '<svg class="bomb-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 1v5m0 12v5M1 12h5m12 0h5M4 4l4 4m8 8 4 4M4 20l4-4m8-8 4-4"/></svg>';
+  const star = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2 3.1 6.3 7 .9-5 4.9 1.2 6.9-6.3-3.3L5.7 21l1.2-6.9-5-4.9 7-.9z"/></svg>';
+  const stageInfo = () => stageNumber === 54 ? { targets: 10, seconds: 125 } : { targets: 8, seconds: 135 };
+  const criteria = () => '<div class="criteria" aria-label="별 획득 조건"><div class="criterion"><b>1별</b>목표 달성</div><div class="criterion"><b>2별</b>'+stageInfo().seconds*.8+'초 이내</div><div class="criterion"><b>3별</b>'+stageInfo().seconds*.6+'초 이내</div></div>';
+  const rule = '<div class="rule-tile"><svg viewBox="0 0 48 48" fill="none" aria-hidden="true"><rect x="2" y="2" width="44" height="44" rx="8" stroke="#ffdc73"/><path d="M24 8v10m0 12v10M8 24h10m12 0h10m-26-10 7 7m6 6 7 7m-20 0 7-7m6-6 7-7" stroke="#ffdc73" stroke-width="2"/><circle cx="24" cy="24" r="4" stroke="#fff" stroke-width="2"/></svg><span>이 블록이 있는 줄을 지우면<br>주변 3×3칸도 제거돼요.</span></div>';
+  const notes = {
+    stages: ["목록에는 진행과 규칙만", "<p>51·52를 클리어하고 53에 도전하는 예시입니다. 다음 단계는 순서대로 열립니다.</p><ul><li>53의 방사형 표식: 새 폭발 규칙</li><li>55는 중간 AI, 60은 보스</li><li>이 시안은 53만 선택 가능합니다. 완성된 게임의 전체 목록이 아닙니다.</li></ul>"],
+    entry: ["한 번에 읽히는 목표", "<p>처음 보는 특수 블록만 그림 한 장과 한 문장으로 소개합니다. 장식적인 스토리 부제는 없습니다.</p><ul><li>무엇을: ◇ 목표 블록 8개</li><li>언제까지: 135초 안에</li><li>얼마나 잘: 시작 전에 별 조건 확인</li></ul>"],
+    play: ["인게임에는 목표와 시간만", "<p>상단 설명문 대신 두 줄로 끝냅니다. 목표를 누르면 별 조건, 정지를 누르면 재개/재도전 동선을 확인할 수 있습니다.</p><ul><li>◇는 지워야 할 한 칸</li><li>방사형 표식은 폭발 블록</li><li>새 스킬 버튼은 추가하지 않음</li></ul>"],
+    blast: ["한 줄 제거가 주변 목표까지", "<p>줄이 완성된 직후의 정산 전 장면과 제거 후를 비교하세요. 이 예시는 목표 8개 중 4개가 제거됩니다.</p><ul><li>완성한 줄에서 목표2개</li><li>3×3 폭발로 이웃 목표2개</li><li>개별 블록 낙하 없이 완성한 줄만 압축</li></ul>"],
+    shapes: ["효과와 모양은 별개", "<p>I5는 다섯 칸 직선, L5는 다섯 칸 L자입니다. 기본7종과 함께 랜덤으로 나옵니다.</p><ul><li>HOLD·회전·DROP은 같은 조작</li><li>5칸 피스 자체가 자동 5줄 제거는 아님</li><li>I6는 후속 승인 후보</li></ul>"],
+    success: ["클리어와 숙련 보상을 분리", "<p>1별이면 다음 단계에 갈 수 있습니다. 2·3별은 더 빠른 목표 달성의 보상입니다.</p><ul><li>예시: 75.0초에 목표8개 모두 제거 → 3별</li><li>다음 단계가 주 동선, 재도전은 보조</li><li>개발자 앱에서는 기존 미저장 정책 유지</li></ul>"],
+    failure: ["실패 이유를 짧고 정확하게", "<p>한 번 더 도전할 때 무엇을 바꿔야 하는지 알 수 있게 잔여 목표와 실패 원인을 보여줍니다.</p><ul><li>시간 종료와 보드 넘침 구분</li><li>재도전 버튼을 가장 눈에 띄게</li><li>설명이나 광고로 재시작을 막지 않음</li></ul>"]
+  };
+  let screen = "entry", stageNumber = 53, afterBlast = false, selectedShape = "I5", rotation = 0;
+  /** 입력: 시안의 전후 상태 / 출력: 고정 예제 보드. 실제 게임·난수·저장소는 사용하지 않는다. */
+  function renderBoard(after = false, resolvedLine = false) {
+    const targets = new Set(["0,19","3,19","5,19","9,19","1,18","8,18","0,17","9,17"]);
+    if (stageNumber === 54) { targets.add("1,16"); targets.add("8,16"); }
+    const cells = new Map();
+    for (let y=16;y<20;y++) for(let x=0;x<10;x++) {
+      if (y!==18 && (x===6 || x===7)) continue;
+      if (!resolvedLine && y===18 && (x===6 || x===7)) continue;
+      if (after && (y===18 || (x>=3 && x<=5 && y>=17))) continue;
+      const yy = after && y<18 ? y+1 : y;
+      cells.set(`${x},${yy}`, {color:colors[y%7],target:targets.has(`${x},${y}`),bomb:x===4&&y===18});
+    }
+    $("board").replaceChildren();
+    for(let y=0;y<20;y++) for(let x=0;x<10;x++) {
+      const element = document.createElement("div"), value=cells.get(`${x},${y}`);
+      element.className="cell";
+      if(value){element.classList.add("filled");element.style.setProperty("--piece",value.color);if(value.target)element.classList.add("target");if(value.bomb)element.innerHTML=bomb;}
+      if(!resolvedLine && y===7 && x>=3 && x<=6){element.classList.add("filled");element.style.setProperty("--piece",colors[0]);}
+      $("board").append(element);
+    }
+    const seconds=stageInfo().seconds, time=`${String(Math.floor(seconds/60)).padStart(2,"0")}:${String(seconds%60).padStart(2,"0")}`;
+    document.querySelector(".goal-button small").textContent=`${stageNumber} / 80 · 타임어택`;
+    $("goal-text").textContent=`◇ ${stageInfo().targets-(after?4:0)}개 남음 · ${resolvedLine?"01:39":time}`;
+  }
+  /** 입력: 모달용 마크업 / 출력: 제안된 모바일 오버레이. */
+  function modal(markup){$("sheet").innerHTML=markup;$("overlay").hidden=false;}
+  function hideModal(){$("overlay").hidden=true;}
+  /** 입력: 선택 화면 / 출력: 해당 승인용 상태, 네비게이션·설명·모달 동기화. */
+  function show(next, id=53){
+    screen=next;stageNumber=id;afterBlast=false;renderBoard(false,next==="blast");hideModal();
+    document.querySelectorAll("[data-screen]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.screen===next)));
+    $("note-title").textContent=notes[next][0];$("note-body").innerHTML=notes[next][1];$("step-area").hidden=next!=="blast";$("blast-step").textContent="제거 후 보기";
+    if(next==="stages")modal('<h2>스테이지</h2><p class="muted">예시 진행 · 52단계 완료 · 검토용으로 53만 선택 가능</p><div style="display:grid;grid-template-columns:repeat(5,1fr);gap:7px">'+Array.from({length:10},(_,n)=>{const id=n+51;return '<button type="button" class="secondary" '+(id===53?'data-action="entry"':'disabled')+' style="font-size:12px;min-height:72px;opacity:'+(id>53?.4:1)+'">'+id+'<br>'+(id===51?'★★★':id===52?'★★☆':id===53?'✳':id===55?'AI':id===60?'보스':'잠김')+'</button>';}).join('')+'</div>');
+    if(next==="entry"){
+      $("note-body").innerHTML='<p>단계 '+id+'의 목표는 '+stageInfo().targets+'개, 제한 시간은 '+stageInfo().seconds+'초입니다. 같은 기준을 시작 전·정지·결과에서 보여줍니다.</p><ul><li>첫 소개에서만 새 블록 그림 안내</li><li>긴 설명 대신 목표와 조건</li><li>1별로 다음 단계에 도전</li></ul>';
+      modal('<h2>스테이지 '+id+'</h2><p class="summary">목표 블록 '+stageInfo().targets+'개 제거</p><p class="muted">제한 시간 '+stageInfo().seconds+'초</p>'+(id===53?rule:'')+criteria()+'<button type="button" class="primary" data-action="play">시작</button><button type="button" class="plain" data-action="stages">단계 목록 · 시안</button>');
+    }
+    if(next==="success")modal('<h2>스테이지 클리어!</h2><div class="result-stars" aria-label="이번 별 3개">'+star.repeat(3)+'</div><p class="time-value">75.0초</p><p class="muted" style="text-align:center">목표 블록 8개 모두 제거</p>'+criteria()+'<button type="button" class="primary" data-action="next">다음 스테이지 · 시안</button><button type="button" class="secondary" data-action="play">한 번 더 플레이 · 시안</button><button type="button" class="plain" data-action="stages">단계 목록 · 시안</button>');
+    if(next==="failure")modal('<h2>시간이 다 됐어요</h2><p class="summary">◇ 목표 2개 남음</p><p class="muted">시간 안에 목표 블록을 모두 제거해 보세요.</p><button type="button" class="primary" data-action="play">다시 도전 · 시안</button><button type="button" class="plain" data-action="stages">단계 목록 · 시안</button>');
+    if(next==="shapes")shapeSheet();
+  }
+  /** 입력: 형태와 회전 상태 / 출력: 칸 수가 보존되는 실루엣 설명. 벽 킥/물리 검증은 아니다. */
+  function shapeSheet(){
+    modal('<h2>새로운 블록</h2><div class="shape-options"><button type="button" data-shape="I5">I5 · 1차</button><button type="button" data-shape="L5">L5 · 1차</button><button type="button" data-shape="I6">I6 · 후속</button></div><div class="shape-grid" id="shape-grid" role="img"></div><p id="shape-caption" class="muted" style="text-align:center"></p><button type="button" class="primary" data-action="rotate">90° 회전해 보기</button><button type="button" class="plain" data-action="play">플레이 화면 시안 보기</button>');
+    let points = selectedShape==="L5" ? [[1,0],[1,1],[1,2],[1,3],[2,3]] : Array.from({length:selectedShape==="I6"?6:5},(_,x)=>[x,2]);
+    const pivot=selectedShape==="I6"?2.5:2;
+    for(let i=0;i<rotation;i++)points=points.map(([x,y])=>[pivot-(y-pivot),pivot+(x-pivot)]);
+    const on=new Set(points.map(point=>point.join(",")));$("shape-grid").style.setProperty("--shape-color",selectedShape==="L5"?colors[6]:colors[0]);
+    for(let y=0;y<6;y++)for(let x=0;x<6;x++){const c=document.createElement("span");if(on.has(`${x},${y}`))c.className="on";$("shape-grid").append(c);}
+    $("shape-grid").setAttribute("aria-label",`${selectedShape}, ${points.length}칸, ${rotation*90}도 회전`);
+    $("shape-caption").textContent=`${selectedShape} · ${points.length}칸 · ${rotation*90}°${selectedShape==="I6"?" · 별도 승인 필요":""}`;
+    document.querySelectorAll("[data-shape]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.shape===selectedShape)));
+  }
+  document.querySelectorAll("[data-screen]").forEach(b=>b.addEventListener("click",()=>show(b.dataset.screen)));
+  $("blast-step").addEventListener("click",()=>{afterBlast=!afterBlast;renderBoard(afterBlast,true);$("blast-step").textContent=afterBlast?"제거 전으로 돌아가기":"제거 후 보기";});
+  $("goal-button").addEventListener("click",()=>modal('<h2>목표와 별 조건</h2><p class="summary">◇ 목표 블록 '+stageInfo().targets+'개 제거</p>'+criteria()+rule+'<button type="button" class="primary" data-action="resume">계속하기 · 시안</button>'));
+  $("pause-button").addEventListener("click",()=>modal('<h2>일시정지</h2><button type="button" class="primary" data-action="resume">계속하기 · 시안</button><button type="button" class="secondary" data-action="criteria">목표와 별 조건</button><button type="button" class="secondary" data-action="restart">다시하기 · 시안</button><button type="button" class="plain" data-action="exit">단계 목록 · 시안</button>'));
+  $("sheet").addEventListener("click",event=>{
+    const b=event.target.closest("button");if(!b)return;
+    if(b.dataset.shape){selectedShape=b.dataset.shape;rotation=0;shapeSheet();return;}
+    const action=b.dataset.action;
+    if(action==="rotate"){rotation=(rotation+1)%4;shapeSheet();}
+    else if(action==="resume")hideModal();
+    else if(action==="criteria")$("goal-button").click();
+    else if(action==="pause")$("pause-button").click();
+    else if(action==="next")show("entry",54);
+    else if(action==="exit")modal('<h2>도전을 종료할까요?</h2><p class="muted">이번 도전은 기록되지 않아요.</p><button type="button" class="primary" data-action="pause">돌아가기 · 시안</button><button type="button" class="secondary" data-action="stages">단계 목록 · 시안</button>');
+    else if(action==="restart")modal('<h2>다시 시작할까요?</h2><p class="muted">현재 도전은 종료돼요.</p><button type="button" class="primary" data-action="pause">돌아가기 · 시안</button><button type="button" class="secondary" data-action="play">다시 시작 · 시안</button>');
+    else if(action==="stages")show("stages");
+    else if(action==="play"||action==="entry")show(action,stageNumber);
+  });
+  show("entry");
+})();
+</script>
+</body></html>
