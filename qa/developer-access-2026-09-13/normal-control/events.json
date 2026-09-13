@@ -1,0 +1,11 @@
+[
+  {
+    "capture": "normal-stage-locks"
+  },
+  {
+    "phase": "done",
+    "build": "normal",
+    "available": 1,
+    "locked": 49
+  }
+]

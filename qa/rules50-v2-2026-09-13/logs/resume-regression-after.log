@@ -1,0 +1,10 @@
+
+ RUN  v2.1.9 /Volumes/Macintosh HD/Users/rpg/E61-data-backup-2026-09-11/tetris
+
+ ✓ tests/single-player/agent-A-single-player.test.tsx (13 tests) 410ms
+
+ Test Files  1 passed (1)
+      Tests  13 passed (13)
+   Start at  01:26:10
+   Duration  1.07s (transform 173ms, setup 0ms, collect 258ms, tests 410ms, environment 174ms, prepare 35ms)
+

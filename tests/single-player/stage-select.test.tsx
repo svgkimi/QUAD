@@ -1,8 +1,21 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { StageSelect } from "../../src/components/screens/StageSelect";
 import { click, mount } from "./agent-A-harness";
 
 describe("50-stage menu contracts", () => {
+  it("developer menu opens all stages without awarding completion or fake stars", async () => {
+    const start = vi.fn();
+    const host = await mount(<StageSelect developerAccess completed={0} ready={false} error={false} onRetry={() => {}} onStart={start} onClose={() => {}} />);
+    const buttons = [...host.querySelectorAll<HTMLButtonElement>('button[aria-label*="번 "]')];
+    expect(buttons.filter(button => !button.disabled)).toHaveLength(50);
+    expect(buttons.some(button => button.getAttribute("aria-label")?.includes("완료"))).toBe(false);
+    expect(host.querySelector('#stage-50-stars')?.textContent).toBe("획득 별 0 / 3");
+    expect(host.textContent).toContain("기록 저장 안 함");
+    await click(host, "50번 5장 보스 도전");
+    await click(host, "이 스테이지 시작");
+    expect(start).toHaveBeenCalledTimes(1);
+    expect(start).toHaveBeenCalledWith(50);
+  });
   it("keeps sequential locks and distinguishes five bosses from middle AI", async () => {
     const host = await mount(<StageSelect completed={0} ready error={false} onRetry={() => {}} onStart={() => {}} onClose={() => {}} />);
     const stages = [...host.querySelectorAll<HTMLButtonElement>('button[aria-label*="번 "]')];
@@ -15,7 +28,7 @@ describe("50-stage menu contracts", () => {
     const host = await mount(<StageSelect completed={29} ready error={false} onRetry={() => {}} onStart={() => {}} onClose={() => {}} />);
     await click(host, "30번 3장 보스 도전");
     expect(host.textContent).toContain("AI 보드 넘치게 하기");
-    expect(host.querySelector('[aria-label="별 획득 조건"]')?.textContent).toContain("75초 이내");
+    expect(host.querySelector('[aria-label="별 획득 조건"]')?.textContent).toContain("90초 이내");
     expect(host.querySelector("ul")).toBeNull();
     expect(host.textContent).not.toContain("200스테이지");
     expect(host.textContent).not.toContain("낙하 속도");

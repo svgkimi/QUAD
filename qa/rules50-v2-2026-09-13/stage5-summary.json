@@ -1,0 +1,56 @@
+[
+  {
+    "variant": "previous-parameters",
+    "profile": "slow-agent",
+    "wins": 20,
+    "total": 30,
+    "timeouts": 0,
+    "meanReceived": 7.3,
+    "meanDurationSec": 115.48666666666666
+  },
+  {
+    "variant": "previous-parameters",
+    "profile": "steady-agent",
+    "wins": 21,
+    "total": 30,
+    "timeouts": 0,
+    "meanReceived": 4.666666666666667,
+    "meanDurationSec": 77.90333333333332
+  },
+  {
+    "variant": "previous-parameters",
+    "profile": "fast-agent",
+    "wins": 23,
+    "total": 30,
+    "timeouts": 0,
+    "meanReceived": 1.6333333333333333,
+    "meanDurationSec": 34.583333333333336
+  },
+  {
+    "variant": "candidate",
+    "profile": "slow-agent",
+    "wins": 22,
+    "total": 30,
+    "timeouts": 1,
+    "meanReceived": 4.466666666666667,
+    "meanDurationSec": 128.49666666666667
+  },
+  {
+    "variant": "candidate",
+    "profile": "steady-agent",
+    "wins": 22,
+    "total": 30,
+    "timeouts": 0,
+    "meanReceived": 2.9,
+    "meanDurationSec": 85.80333333333333
+  },
+  {
+    "variant": "candidate",
+    "profile": "fast-agent",
+    "wins": 22,
+    "total": 30,
+    "timeouts": 0,
+    "meanReceived": 1.5333333333333334,
+    "meanDurationSec": 33.55
+  }
+]

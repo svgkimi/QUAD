@@ -1,4 +1,6 @@
-import { applyAction, createInitialState, type EngineAction, type EngineState } from "../engine";
+import { applyAction, createInitialState, type EngineAction, type EngineState, type Position } from "../engine";
+import { calculateAttackLines } from "./attack";
+import { advanceTargetCells } from "./targets";
 import { chooseOpponentActions } from "./opponent";
 import { addGarbage, handicapOpponent, stackHeight } from "./garbage";
 import { makeStageBoard, type StageDefinition } from "./stages";
@@ -17,6 +19,8 @@ export interface CampaignRun {
   readonly sent: number;
   readonly received: number;
   readonly targetRows: readonly number[];
+  readonly targetCells: readonly Position[];
+  readonly bestClear: number;
   readonly ai: EngineState | null;
 }
 interface CampaignState extends EngineState { readonly campaign: CampaignRun }
@@ -38,7 +42,7 @@ function startCampaign(stage: StageDefinition, seed: number): CampaignState {
   const player = applyAction(createInitialState({ seed: seed }), { type: "START", seed: seed, setup });
   const ai = stage.kind === "duel" ? handicapOpponent(applyAction(createInitialState({ seed: seed }), { type: "START", seed: seed, setup: { ...setup, board: createInitialState({ seed: 1 }).board } }), stage.aiHandicapRows ?? 0, seed ^ 1234) : null;
   return { ...player, campaign: { stageId: stage.id, outcome: "playing", piecesUsed: 0, streak: 0, elapsedMs: 0, dangerMs: 0, aiElapsedMs: 0, pressureElapsedMs: 0, attackSeed: seed ^ 93217, sent: 0, received: 0,
-    targetRows: board.flatMap((row, y) => row.some(cell => cell !== null) ? [y] : []), ai,
+    targetRows: board.flatMap((row, y) => row.some(cell => cell !== null) ? [y] : []), targetCells: stage.targetCells ?? [], bestClear: 0, ai,
   } };
 }
 
@@ -56,8 +60,9 @@ export function reduceCampaign(state: EngineState, action: EngineAction, stage: 
     : stage.reverseControls && action.type === "MOVE_RIGHT" ? { type: "MOVE_LEFT" } : action;
   let next = applyAction(state, ticking ? { type: "TICK", deltaMs: delta } : mappedAction);
   let updated: CampaignRun = { ...run, elapsedMs: run.elapsedMs + delta, dangerMs: run.dangerMs + (stackHeight(state) >= 12 ? delta : 0) };
-  if (next.lastScoreEvent !== state.lastScoreEvent && next.lastScoreEvent) updated = { ...updated, piecesUsed: run.piecesUsed + 1, streak: next.combo, targetRows: advanceTargetRows(run.targetRows, next.lastScoreEvent.clearedRows) };
-  const won = stage.kind === "combo" ? updated.streak >= stage.target : stage.kind === "duel" ? false : stage.kind === "survival" ? updated.elapsedMs >= stage.surviveMs! : stage.kind === "dig" || stage.kind === "puzzle" || stage.kind === "limited" ? updated.targetRows.length === 0 : next.totalLinesCleared >= stage.target;
+  const locked = next.lastScoreEvent !== state.lastScoreEvent && next.lastScoreEvent;
+  if (locked) updated = { ...updated, piecesUsed: run.piecesUsed + 1, streak: next.combo, targetRows: advanceTargetRows(run.targetRows, locked.clearedRows), targetCells: advanceTargetCells(run.targetCells, locked.clearedRows), bestClear: Math.max(run.bestClear, locked.clearedRows.length) };
+  const won = stage.kind === "mission" ? updated.bestClear >= stage.target : stage.targetCells ? updated.targetCells.length === 0 : stage.kind === "combo" ? updated.streak >= stage.target : stage.kind === "duel" ? false : stage.kind === "survival" ? updated.elapsedMs >= stage.surviveMs! : stage.kind === "dig" || stage.kind === "puzzle" || stage.kind === "limited" ? updated.targetRows.length === 0 : next.totalLinesCleared >= stage.target;
   if (next.status === "gameover" && stage.kind === "survival") updated = { ...updated, outcome: "failed", reason: "topout" };
   else if (won) updated = { ...updated, outcome: "cleared", reason: "goal" };
   else if (next.status === "gameover") updated = { ...updated, outcome: "failed", reason: "topout" };
@@ -65,7 +70,7 @@ export function reduceCampaign(state: EngineState, action: EngineAction, stage: 
   else if (stage.limitMs && updated.elapsedMs >= stage.limitMs) updated = { ...updated, outcome: "failed", reason: "timeout" };
 
   if (updated.outcome === "playing" && updated.ai) {
-    const cleared = next.totalLinesCleared - state.totalLinesCleared;
+    const cleared = locked ? calculateAttackLines(locked, state.backToBack) : 0;
     if (cleared > 0) {
       const attack = addGarbage(updated.ai, cleared, updated.attackSeed);
       updated = { ...updated, ai: attack.state, attackSeed: attack.seed, sent: updated.sent + cleared };
@@ -78,9 +83,9 @@ export function reduceCampaign(state: EngineState, action: EngineAction, stage: 
     if (aiElapsedMs >= stage.aiMoveMs!) {
       // 긴 프레임에서도 AI가 여러 블록을 한꺼번에 놓아 따라잡지 않는다.
       aiElapsedMs %= stage.aiMoveMs!;
-      const beforeLines = ai.totalLinesCleared;
+      const beforeEvent = ai.lastScoreEvent, beforeB2B = ai.backToBack;
       for (const move of chooseOpponentActions(ai, stage.aiLookahead, !!stage.aiMistakeEvery && ai.score > 0 && (Math.floor(updated.elapsedMs / stage.aiMoveMs!) % stage.aiMistakeEvery === 0))) ai = applyAction(ai, move);
-      const cleared = ai.totalLinesCleared - beforeLines;
+      const cleared = ai.lastScoreEvent && ai.lastScoreEvent !== beforeEvent ? calculateAttackLines(ai.lastScoreEvent, beforeB2B) : 0;
       if (cleared > 0 && ai.status !== "gameover") {
         const attack = addGarbage(next, cleared, updated.attackSeed);
         next = attack.state; updated = { ...updated, attackSeed: attack.seed, received: updated.received + cleared };

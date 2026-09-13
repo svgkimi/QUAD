@@ -21,10 +21,10 @@ describe("first playtest feedback retained in basic fifty", () => {
       state = reduceCampaign(state, { type: "TICK", deltaMs: 50 }, stage);
     expect(getCampaignRun(state)?.reason).toBe("topout");
   });
-  it.each(STAGES.filter(s => s.kind === "duel"))("AI $id moves within two seconds and freezes when paused", stage => {
+  it.each(STAGES.filter(s => s.kind === "duel"))("AI $id moves at its configured interval and freezes when paused", stage => {
     let state = reduceCampaign(createInitialState({ seed: 1 }), { type: "START", seed: 1 }, stage);
     const before = getCampaignRun(state)!.ai!.board;
-    for(let ms=0;ms<2000;ms+=16) state = reduceCampaign(state,{type:"TICK",deltaMs:16},stage);
+    for(let ms=0;ms<stage.aiMoveMs!;ms+=16) state = reduceCampaign(state,{type:"TICK",deltaMs:16},stage);
     expect(getCampaignRun(state)!.ai!.board).not.toEqual(before);
     state = reduceCampaign(state,{type:"PAUSE"},stage);
     expect(reduceCampaign(state,{type:"TICK",deltaMs:5000},stage)).toEqual(state);

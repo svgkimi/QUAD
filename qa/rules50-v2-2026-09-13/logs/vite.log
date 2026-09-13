@@ -1,0 +1,14 @@
+BUILD_OUT=/var/folders/gs/xz_1j4vj0jl68656c_36tg6r0000gn/T/quad-rules-vite-kXdJqw
+vite v5.4.21 building for production...
+
+(!) outDir /var/folders/gs/xz_1j4vj0jl68656c_36tg6r0000gn/T/quad-rules-vite-kXdJqw is not inside project root and will not be emptied.
+Use --emptyOutDir to override.
+
+transforming...
+✓ 93 modules transformed.
+rendering chunks...
+computing gzip size...
+../../../../../../var/folders/gs/xz_1j4vj0jl68656c_36tg6r0000gn/T/quad-rules-vite-kXdJqw/index.html                   0.43 kB │ gzip:  0.29 kB
+../../../../../../var/folders/gs/xz_1j4vj0jl68656c_36tg6r0000gn/T/quad-rules-vite-kXdJqw/assets/index-BxNKY_2i.css   28.19 kB │ gzip:  6.45 kB
+../../../../../../var/folders/gs/xz_1j4vj0jl68656c_36tg6r0000gn/T/quad-rules-vite-kXdJqw/assets/index-Bb5fE7l9.js   262.16 kB │ gzip: 83.99 kB
+✓ built in 1.21s

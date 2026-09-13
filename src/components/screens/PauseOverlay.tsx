@@ -15,13 +15,14 @@ export interface PauseOverlayProps {
   readonly onMainMenu: () => void;
   readonly onHelp?: () => void;
   readonly onCustomizeControls?: () => void;
+  readonly onStageCriteria?: () => void;
 }
 
 /**
  * 일시정지 오버레이를 렌더링한다.
  * 입력: onResume, onRestart, onMainMenu / 출력: JSX
  */
-export function PauseOverlay({ onResume, onRestart, onMainMenu, onHelp, onCustomizeControls }: PauseOverlayProps) {
+export function PauseOverlay({ onResume, onRestart, onMainMenu, onHelp, onCustomizeControls, onStageCriteria }: PauseOverlayProps) {
   const root = useRef<HTMLDivElement>(null);
   const id = useId();
   useModalFocus(root, onResume);
@@ -38,6 +39,7 @@ export function PauseOverlay({ onResume, onRestart, onMainMenu, onHelp, onCustom
             계속하기
           </button>
           {onHelp && <button type="button" onClick={onHelp} className="min-h-11 rounded-full px-8 text-cyan-200">조작 안내</button>}
+          {onStageCriteria && <button type="button" onClick={onStageCriteria} className="min-h-11 rounded-full px-6 text-amber-200">목표와 별 조건</button>}
           {onCustomizeControls && <button type="button" onClick={onCustomizeControls} className="min-h-11 rounded-full px-8 text-white/80">버튼 배치</button>}
           <button
             type="button"

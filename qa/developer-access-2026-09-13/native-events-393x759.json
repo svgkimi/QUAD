@@ -1,0 +1,63 @@
+[
+  {
+    "capture": "developer-main"
+  },
+  {
+    "capture": "developer-stage-list"
+  },
+  {
+    "capture": "developer-play-50"
+  },
+  {
+    "phase": "stage-checked",
+    "stage": 50,
+    "aiMoved": true,
+    "restart": true,
+    "progressUnchanged": true,
+    "viewport": [
+      393,
+      759
+    ],
+    "board": {
+      "x": 52,
+      "y": 54,
+      "width": 289,
+      "height": 578
+    }
+  },
+  {
+    "capture": "developer-play-30"
+  },
+  {
+    "phase": "stage-checked",
+    "stage": 30,
+    "aiMoved": true,
+    "restart": true,
+    "progressUnchanged": true,
+    "viewport": [
+      393,
+      759
+    ],
+    "board": {
+      "x": 52,
+      "y": 54,
+      "width": 289,
+      "height": 578
+    }
+  },
+  {
+    "capture": "developer-practice-result"
+  },
+  {
+    "phase": "done",
+    "available": 50,
+    "clearedStage": 12,
+    "earnedStars": 3,
+    "nextStage": 13,
+    "progressUnchanged": true,
+    "viewport": [
+      393,
+      759
+    ]
+  }
+]

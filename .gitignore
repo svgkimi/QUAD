@@ -2,6 +2,7 @@ node_modules
 dist
 dist-ssr
 dist-standalone
+dist-developer
 tetris-standalone.html
 *.tsbuildinfo
 *.local

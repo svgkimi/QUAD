@@ -6,7 +6,14 @@ import { advance, click, finishCountdown, frame, key, mount, remount, visibility
 const observation = vi.hoisted(() => ({
   current: null as UseGameEngineResult | null,
   mobile: false,
+  developerAccess: false,
   submitScore: vi.fn(() => true),
+}));
+
+// 빌드 상수만 대체한다. 실제 단계 선택·진입 가드·엔진·저장은 그대로 검증한다.
+vi.mock("../../src/campaign/access", async importOriginal => ({
+  ...await importOriginal<typeof import("../../src/campaign/access")>(),
+  get DEVELOPER_STAGE_ACCESS() { return observation.developerAccess; },
 }));
 
 const audio = vi.hoisted(() => ({
@@ -76,12 +83,88 @@ async function reachGameover(): Promise<void> {
 
 beforeEach(() => {
   observation.mobile = false;
+  observation.developerAccess = false;
   observation.current = null;
   vi.clearAllMocks();
   vi.spyOn(Math, "random").mockReturnValue(0.123456);
 });
 
 describe("Agent A | actual SinglePlayerApp and useGameEngine lifecycle", () => {
+  it.each([30, 40, 50])("developer stage %s starts, pauses and restarts without altering normal progress", async id => {
+    observation.developerAccess = true; observation.mobile = true;
+    const stored = '{"version":1,"completed":2,"stars":{"1":3,"2":2}}';
+    localStorage.setItem("quad:campaign-basic50-v1", stored);
+    const host = await mount(<StrictMode><SinglePlayerApp /></StrictMode>);
+    expect(host.textContent).toContain("DEV · 전체 단계 연습");
+    await click(host, "스테이지 모드");
+    await click(host, `${id}번 ${id / 10}장 보스 도전`);
+    await click(host, "이 스테이지 시작"); await finishCountdown();
+    expect(getCampaignRun(game().state)?.stageId).toBe(id);
+    expect(game().state.status).toBe("playing");
+    await key("KeyP"); await click(host, "다시하기"); await finishCountdown();
+    expect(getCampaignRun(game().state)?.stageId).toBe(id);
+    expect(game().state.status).toBe("playing");
+    expect(localStorage.getItem("quad:campaign-basic50-v1")).toBe(stored);
+    await remount(<StrictMode><SinglePlayerApp /></StrictMode>);
+    await click(host, "스테이지 모드");
+    expect([...host.querySelectorAll<HTMLButtonElement>('button[aria-label*="번 "]')].every(b => !b.disabled)).toBe(true);
+  });
+
+  it("a skipped developer mission shows earned stars and allows next stage but does not save progress", async () => {
+    observation.developerAccess = true; observation.mobile = true;
+    const stored = '{"version":1,"completed":1,"stars":{"1":2}}';
+    localStorage.setItem("quad:campaign-basic50-v1", stored);
+    vi.mocked(Math.random).mockReturnValue(7 / 4294967296);
+    const host = await mount(<StrictMode><SinglePlayerApp /></StrictMode>);
+    await click(host, "스테이지 모드");
+    const label = host.querySelector('[aria-label^="12번 "]')!.getAttribute("aria-label")!;
+    await click(host, label); await click(host, "이 스테이지 시작"); await finishCountdown();
+    for (const code of ["ArrowUp", "ArrowLeft", "ArrowLeft", "ArrowLeft", "ArrowLeft", "Space"]) {
+      await key(code); await key(code, "keyup");
+    }
+    expect(getCampaignRun(game().state)?.outcome).toBe("cleared");
+    expect(host.textContent).toContain("이번 연습 3별");
+    expect(localStorage.getItem("quad:campaign-basic50-v1")).toBe(stored);
+    await click(host, "다음 스테이지"); await finishCountdown();
+    expect(getCampaignRun(game().state)?.stageId).toBe(13);
+    expect(observation.submitScore).not.toHaveBeenCalled();
+    expect(localStorage.getItem("quad:campaign-basic50-v1")).toBe(stored);
+  });
+
+  it("normal build does not unlock from a developer URL or localStorage toggle", async () => {
+    localStorage.setItem("quad:developer-mode", "true");
+    const previousUrl = location.href;
+    history.replaceState(null, "", "?developer=true&unlockStages=1");
+    try {
+      const host = await mount(<StrictMode><SinglePlayerApp /></StrictMode>);
+      await click(host, "스테이지 모드");
+      expect(host.querySelector<HTMLButtonElement>('[aria-label^="50번 "]')!.disabled).toBe(true);
+      expect(host.textContent).not.toContain("기록 저장 안 함");
+    } finally { history.replaceState(null, "", previousUrl); }
+  });
+  it.each([false, true])("stage criteria pauses AI/time and resumes on one explicit click (mobile=%s)", async mobile => {
+    observation.mobile = mobile;
+    localStorage.setItem("quad:campaign-basic50-v1", JSON.stringify({ version: 1, completed: 4 }));
+    const host = await mount(<StrictMode><SinglePlayerApp /></StrictMode>);
+    await click(host, "스테이지 모드"); await click(host, "5번 1장 라이벌 도전");
+    await click(host, "이 스테이지 시작"); await finishCountdown();
+    await frame(1000); await frame(1050);
+    await click(host, "목표와 별 조건 보기");
+    expect(game().state.status).toBe("paused");
+    const frozen = JSON.stringify(game().state);
+    await key("KeyP"); await key("KeyP", "keyup"); await frame(50000);
+    expect(JSON.stringify(game().state)).toBe(frozen);
+    await click(host, "계속하기");
+    expect(game().state.status).toBe("playing");
+    expect(host.querySelector('[role="dialog"]')).toBeNull();
+    const before = getCampaignRun(game().state)!.elapsedMs;
+    await frame(60000); await frame(60050);
+    expect(getCampaignRun(game().state)!.elapsedMs - before).toBe(50);
+    await click(host, "목표와 별 조건 보기"); await visibility(true);
+    await click(host, "계속하기"); await visibility(false);
+    expect(game().state.status).toBe("paused");
+  });
+
   it("campaign unlocks through real UI, saves separately, and returns to classic cleanly", async () => {
     localStorage.setItem("quad:campaign-progress", '{"version":1,"completed":17}');
     const host = await mount(<StrictMode><SinglePlayerApp /></StrictMode>);

@@ -1,0 +1,97 @@
+
+ RUN  v2.1.9 /Volumes/Macintosh HD/Users/rpg/E61-data-backup-2026-09-11/tetris
+
+ ✓ src/engine/__tests__/gameEngine.test.ts (21 tests) 6ms
+ ✓ tests/single-player/agent-A-single-player.test.tsx (13 tests) 505ms
+ ✓ tests/single-player/campaign-engine.test.ts (70 tests) 1909ms
+stdout | tests/single-player/C-touch.lifecycle.test.ts > Agent C current single-player lifecycle contracts > C-01 unmount at 40 ms stops callbacks and clears timers
+C-touch evidence {"issue":"C-01","delay":40,"callsAtUnmount":1,"timersAtUnmount":0,"extraCalls":0,"timersAfter1000ms":0}
+
+stdout | tests/single-player/C-touch.lifecycle.test.ts > Agent C current single-player lifecycle contracts > C-01 unmount at 220 ms stops callbacks and clears timers
+C-touch evidence {"issue":"C-01","delay":220,"callsAtUnmount":3,"timersAtUnmount":0,"extraCalls":0,"timersAfter1000ms":0}
+
+stdout | tests/single-player/C-touch.lifecycle.test.ts > Agent C current single-player lifecycle contracts > C-01 all three held buttons are cleaned on unmount
+C-touch evidence {"issue":"C-01-multiple","extraCalls":0,"timersAfterUnmount":0}
+
+stdout | tests/single-player/C-touch.lifecycle.test.ts > Agent C current single-player lifecycle contracts > C-02 playing -> ready at 40 ms cancels the held repeat
+C-touch evidence {"issue":"C-02","status":"ready","delay":40,"timersAtDisable":0,"extraWhileDisabled":0,"extraAfterResumeWithoutNewDown":0,"timersAfterResume":0}
+
+stdout | tests/single-player/C-touch.lifecycle.test.ts > Agent C current single-player lifecycle contracts > C-02 playing -> ready at 220 ms cancels the held repeat
+C-touch evidence {"issue":"C-02","status":"ready","delay":220,"timersAtDisable":0,"extraWhileDisabled":0,"extraAfterResumeWithoutNewDown":0,"timersAfterResume":0}
+
+stdout | tests/single-player/C-touch.lifecycle.test.ts > Agent C current single-player lifecycle contracts > C-02 playing -> paused at 40 ms cancels the held repeat
+C-touch evidence {"issue":"C-02","status":"paused","delay":40,"timersAtDisable":0,"extraWhileDisabled":0,"extraAfterResumeWithoutNewDown":0,"timersAfterResume":0}
+
+stdout | tests/single-player/C-touch.lifecycle.test.ts > Agent C current single-player lifecycle contracts > C-02 playing -> paused at 220 ms cancels the held repeat
+C-touch evidence {"issue":"C-02","status":"paused","delay":220,"timersAtDisable":0,"extraWhileDisabled":0,"extraAfterResumeWithoutNewDown":0,"timersAfterResume":0}
+
+stdout | tests/single-player/C-touch.lifecycle.test.ts > Agent C current single-player lifecycle contracts > C-02 playing -> gameover at 40 ms cancels the held repeat
+C-touch evidence {"issue":"C-02","status":"gameover","delay":40,"timersAtDisable":0,"extraWhileDisabled":0,"extraAfterResumeWithoutNewDown":0,"timersAfterResume":0}
+
+stdout | tests/single-player/C-touch.lifecycle.test.ts > Agent C current single-player lifecycle contracts > C-02 playing -> gameover at 220 ms cancels the held repeat
+C-touch evidence {"issue":"C-02","status":"gameover","delay":220,"timersAtDisable":0,"extraWhileDisabled":0,"extraAfterResumeWithoutNewDown":0,"timersAfterResume":0}
+
+stdout | tests/single-player/C-touch.lifecycle.test.ts > Agent C current single-player lifecycle contracts > C-03 first finger pointerup does not cancel the second finger on the same button
+C-touch evidence {"issue":"C-03","endEvent":"pointerup","secondPointerStillCaptured":true,"extraWhileSecondHeld":4,"timersWhileSecondHeld":1}
+
+stdout | tests/single-player/C-touch.lifecycle.test.ts > Agent C current single-player lifecycle contracts > C-03 first finger pointercancel does not cancel the second finger on the same button
+C-touch evidence {"issue":"C-03","endEvent":"pointercancel","secondPointerStillCaptured":true,"extraWhileSecondHeld":4,"timersWhileSecondHeld":1}
+
+ ✓ tests/single-player/C-touch.lifecycle.test.ts (29 tests) 230ms
+ ✓ src/engine/__tests__/rotation.test.ts (15 tests) 4ms
+ ✓ tests/single-player/agent-B-rules.test.ts (13 tests) 7ms
+ ✓ tests/single-player/campaign-rules-v2.test.tsx (84 tests) 66ms
+ ✓ tests/single-player/main-audio-storage.test.ts (12 tests) 29ms
+ ✓ tests/single-player/agent-F-cross-check.test.tsx (13 tests) 176ms
+ ✓ src/engine/__tests__/scoring.test.ts (23 tests) 3ms
+stdout | tests/single-player/I-engine-regressions.test.ts > I current single-player regression contracts > I-01 same state + HARD_DROP must produce the same queue on reducer re-evaluation
+I_REPRO {"id":"I-01","seed":1,"trace":["START(seed=1)","HARD_DROP(state)","HARD_DROP(same state again)"],"actual":["L","S","T","I","Z","J","I","O","S","T","L","Z"],"expected":["L","S","T","I","Z","J","I","O","S","T","L","Z"]}
+
+stdout | tests/single-player/I-engine-regressions.test.ts > I current single-player regression contracts > I-02a elapsed time must not disappear when a frame covers multiple gravity intervals
+I_REPRO {"id":"I-02a","seed":2,"trace":{"coarse":["START(2)",{"type":"TICK","deltaMs":2500}],"fine":[1000,1000,500]},"actual":{"y":19,"elapsedMs":500},"expected":{"y":19,"elapsedMs":500}}
+
+stdout | tests/single-player/I-engine-regressions.test.ts > I current single-player regression contracts > I-02b ordinary 16ms frame overshoot must retain the 15ms remainder
+I_REPRO {"id":"I-02b","seed":2,"trace":["START(2)",{"type":"TICK","deltaMs":999},{"type":"TICK","deltaMs":16}],"actual":15,"expected":15}
+
+stdout | tests/single-player/I-engine-regressions.test.ts > I current single-player regression contracts > I-03 lock-reset budget must remain exhausted when the same piece steps off a platform
+I_REPRO {"id":"I-03","seed":3,"trace":{"fixture":"board rows36..39 columns0..5=J; O rotation0 at(3,34)","actions":[{"type":"MOVE_RIGHT"},{"type":"MOVE_LEFT"},{"type":"MOVE_RIGHT"},{"type":"MOVE_LEFT"},{"type":"MOVE_RIGHT"},{"type":"MOVE_LEFT"},{"type":"MOVE_RIGHT"},{"type":"MOVE_LEFT"},{"type":"MOVE_RIGHT"},{"type":"MOVE_LEFT"},{"type":"MOVE_RIGHT"},{"type":"MOVE_LEFT"},{"type":"MOVE_RIGHT"},{"type":"MOVE_LEFT"},{"type":"MOVE_RIGHT"},{"type":"MOVE_RIGHT"},{"type":"MOVE_RIGHT"},{"type":"TICK","deltaMs":1000}]},"actual":15,"expected":15}
+
+stdout | tests/single-player/I-engine-regressions.test.ts > I current single-player regression contracts > I-04 a zero-distance HARD_DROP after a legal rotation must retain T-Spin recognition
+I_REPRO {"id":"I-04","seed":4,"trace":{"fixture":"J at(3,37),(5,37),(3,39); T rotation3 at(3,37)","actions":["ROTATE_CW","HARD_DROP(distance=0)"],"control":["ROTATE_CW","TICK(500)"]},"actual":{"tSpin":"normal","score":400},"expected":{"tSpin":"normal","score":400}}
+
+ ✓ tests/single-player/I-engine-regressions.test.ts (5 tests) 5ms
+ ✓ tests/single-player/agent-F-modal.test.tsx (10 tests) 98ms
+stdout | tests/single-player/I-engine-properties.test.ts
+I_PROPERTY_METRICS {"seedCases":500,"simulations":1000,"soloSimulations":1000,"gameovers":1000,"capReached":0,"replayComparisons":42395,"gameplayActions":84790,"pauseNoops":72600,"gameoverNoops":26000,"locks":12752,"clearedLines":0,"frozenBoardTransitions":84790,"fixedBoardCases":100,"fixedOperations":22400,"lineClearFixtures":40,"bagSeeds":100,"bags":10000,"pieces":70000,"rngDraws":120000,"actions":{"MOVE_RIGHT":5270,"MOVE_LEFT":6836,"ROTATE_CW":5446,"TICK":28884,"SOFT_DROP":5442,"ROTATE_180":5478,"HARD_DROP":12034,"HOLD":4200,"ROTATE_CCW":5392,"PAUSE":2904,"RESUME":2904},"elapsedMs":7732.41,"gameActionCap":600,"boardCellDomain":"null | I | O | T | S | Z | J | L"}
+
+ ✓ tests/single-player/I-engine-properties.test.ts (741 tests) 7724ms
+stdout | tests/single-player/X-cross-callers.test.ts > X: SDK read held past countdown and real gameover preserves the higher persisted record
+X SDK delayed result { gameScore: 274, inMemory: 1000, persisted: '1000' }
+
+ ✓ tests/single-player/X-cross-callers.test.ts (5 tests) 25ms
+ ✓ src/engine/__tests__/bag.test.ts (9 tests) 19ms
+ ✓ tests/single-player/campaign-progress.test.tsx (14 tests) 26ms
+ ✓ tests/single-player/agent-A-hook.test.tsx (7 tests) 36ms
+ ✓ src/engine/__tests__/tetrominoes.test.ts (11 tests) 5ms
+ ✓ tests/single-player/control-editor.test.tsx (4 tests) 64ms
+ ✓ tests/single-player/touch-feedback.test.tsx (6 tests) 42ms
+ ✓ src/engine/__tests__/board.test.ts (11 tests) 3ms
+ ✓ tests/single-player/control-layout.test.tsx (21 tests) 19ms
+ ✓ src/engine/__tests__/lineClear.test.ts (12 tests) 3ms
+ ✓ tests/single-player/release-input.test.tsx (8 tests) 51ms
+ ✓ tests/single-player/release-engine.test.ts (13 tests) 15ms
+ ✓ src/engine/__tests__/movement.test.ts (8 tests) 3ms
+ ✓ tests/single-player/campaign50-contract.test.ts (53 tests) 10ms
+ ✓ tests/single-player/campaign-stars.test.tsx (52 tests) 77ms
+ ✓ tests/single-player/campaign-feedback.test.ts (14 tests) 74ms
+ ✓ tests/single-player/release-storage.test.ts (5 tests) 3ms
+ ✓ tests/single-player/independent-random.test.ts (3 tests) 19ms
+ ✓ tests/single-player/stage-select.test.tsx (3 tests) 109ms
+ ✓ src/engine/__tests__/hold.test.ts (3 tests) 2ms
+ ✓ tests/single-player/stage-labels.test.tsx (6 tests) 61ms
+
+ Test Files  34 passed (34)
+      Tests  1317 passed (1317)
+   Start at  01:36:02
+   Duration  12.49s (transform 536ms, setup 0ms, collect 1.54s, tests 11.43s, environment 7.07s, prepare 1.23s)
+

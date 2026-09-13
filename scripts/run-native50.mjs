@@ -1,8 +1,9 @@
 import { spawn, execFileSync } from "node:child_process";
 import { mkdirSync, cpSync, writeFileSync } from "node:fs";
-const [root,device,...launchArgs]=process.argv.slice(2);
+const [root,device,...args]=process.argv.slice(2);
 if(!root||!device)throw Error("Usage: node scripts/run-native50.mjs BUILD_ROOT DEVICE_ID");
-const bundle="dev.quad.preview.basic50qa";
+const bundle=args.includes("--developer")?"dev.quad.preview.basic50devqa":"dev.quad.preview.basic50qa";
+const launchArgs=args.filter(arg=>arg!=="--developer");
 const suffix=launchArgs.includes("--compact")?"-compact":"";
 const sim=(...args)=>execFileSync("xcrun",["simctl",...args],{encoding:"utf8",timeout:60000}).trim();
 sim("install",device,root+"/DerivedQA/Build/Products/Debug-iphonesimulator/QUADTest.app");

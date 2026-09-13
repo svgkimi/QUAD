@@ -1,0 +1,20 @@
+QUAD_NATIVE_QA {"capture":"rules-v2-main"}
+QUAD_NATIVE_QA {"capture":"rules-v2-stages"}
+QUAD_NATIVE_QA {"capture":"rules-v2-intro-1"}
+QUAD_NATIVE_QA {"capture":"rules-v2-play-1"}
+QUAD_NATIVE_QA {"capture":"rules-v2-criteria-1"}
+QUAD_NATIVE_QA {"phase":"failed","error":"Error: UI wait timeout"}
+dev.quad.preview.basic50qa: 62699
+file:///Volumes/Macintosh%20HD/Users/rpg/E61-data-backup-2026-09-11/tetris/scripts/run-native50.mjs:21
+   if(event.error)failure=new Error(event.error);
+                          ^
+
+Error: Error: UI wait timeout
+    at Socket.<anonymous> (file:///Volumes/Macintosh%20HD/Users/rpg/E61-data-backup-2026-09-11/tetris/scripts/run-native50.mjs:21:27)
+    at Socket.emit (node:events:514:28)
+    at addChunk (node:internal/streams/readable:568:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:519:3)
+    at Readable.push (node:internal/streams/readable:399:5)
+    at Pipe.onStreamRead (node:internal/stream_base_commons:189:23)
+
+Node.js v24.21.0

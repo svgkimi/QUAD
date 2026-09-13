@@ -26,6 +26,7 @@ export interface TitleScreenProps {
   readonly storageError?: boolean;
   readonly onCustomizeControls?: () => void;
   readonly onOpenStages?: () => void;
+  readonly developerStageAccess?: boolean;
 }
 
 type LobbyModal = "controls" | "settings" | null;
@@ -45,6 +46,7 @@ export function TitleScreen({
   storageError,
   onCustomizeControls,
   onOpenStages,
+  developerStageAccess = false,
 }: TitleScreenProps) {
   const [openModal, setOpenModal] = useState<LobbyModal>(null);
 
@@ -69,7 +71,7 @@ export function TitleScreen({
         <div aria-hidden="true" className="-mt-4 flex w-full justify-end gap-1 pr-1">
           {['#c084fc','#c084fc','#facc15','#facc15','#22d3ee','#22d3ee','#22d3ee','#22d3ee'].map((color, i) => <span key={i} className="h-2.5 w-2.5 rounded-[2px]" style={{ background: color }} />)}
         </div>
-        {onOpenStages && <button type="button" onClick={() => { if (!openModal) onOpenStages(); }} className="flex min-h-14 w-full items-center justify-between rounded-xl border border-cyan-200/40 bg-cyan-200/5 px-5 text-left text-white"><span className="font-bold">스테이지 모드</span><span className="text-xs text-cyan-100">50개 도전 · AI 대전</span></button>}
+        {onOpenStages && <button type="button" onClick={() => { if (!openModal) onOpenStages(); }} className="flex min-h-14 w-full items-center justify-between rounded-xl border border-cyan-200/40 bg-cyan-200/5 px-5 text-left text-white"><span className="font-bold">스테이지 모드</span><span className="text-xs text-cyan-100">{developerStageAccess ? "DEV · 전체 단계 연습" : "50개 도전 · AI 대전"}</span></button>}
         <div className="flex w-full justify-center gap-8">
           <button type="button" onClick={() => { if (!openModal) setOpenModal("controls"); }}
             className="flex min-h-14 min-w-16 flex-col items-center justify-center gap-2 rounded-xl text-xs font-medium text-white/75">

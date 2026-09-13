@@ -1,0 +1,33 @@
+
+ RUN  v2.1.9 /Volumes/Macintosh HD/Users/rpg/E61-data-backup-2026-09-11/tetris
+
+ ❯ tests/single-player/agent-A-single-player.test.tsx (13 tests | 2 failed) 457ms
+   × Agent A | actual SinglePlayerApp and useGameEngine lifecycle > stage criteria pauses AI/time and resumes on one explicit click (mobile=false) 124ms
+     → expected 'paused' to be 'playing' // Object.is equality
+   × Agent A | actual SinglePlayerApp and useGameEngine lifecycle > stage criteria pauses AI/time and resumes on one explicit click (mobile=true) 54ms
+     → expected 'paused' to be 'playing' // Object.is equality
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/single-player/agent-A-single-player.test.tsx > Agent A | actual SinglePlayerApp and useGameEngine lifecycle > stage criteria pauses AI/time and resumes on one explicit click (mobile=false)
+ FAIL  tests/single-player/agent-A-single-player.test.tsx > Agent A | actual SinglePlayerApp and useGameEngine lifecycle > stage criteria pauses AI/time and resumes on one explicit click (mobile=true)
+AssertionError: expected 'paused' to be 'playing' // Object.is equality
+
+Expected: "playing"
+Received: "paused"
+
+ ❯ tests/single-player/agent-A-single-player.test.tsx:98:33
+     96|     expect(JSON.stringify(game().state)).toBe(frozen);
+     97|     await click(host, "계속하기");
+     98|     expect(game().state.status).toBe("playing");
+       |                                 ^
+     99|     expect(host.querySelector('[role="dialog"]')).toBeNull();
+    100|     const before = getCampaignRun(game().state)!.elapsedMs;
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 11 passed (13)
+   Start at  01:25:38
+   Duration  1.34s (transform 196ms, setup 0ms, collect 281ms, tests 457ms, environment 279ms, prepare 46ms)
+

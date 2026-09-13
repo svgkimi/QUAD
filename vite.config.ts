@@ -11,6 +11,7 @@ import react from "@vitejs/plugin-react";
 //    ※ 아래 경로는 GitHub 저장소 이름과 반드시 일치해야 한다.
 //  - 로컬 개발 서버(`npm run dev`)는 항상 루트 경로.
 export default defineConfig(({ command }) => ({
+  define: { __QUAD_DEVELOPER_STAGE_ACCESS__: false },
   base:
     command !== "build" || process.env.VERCEL
       ? "/"

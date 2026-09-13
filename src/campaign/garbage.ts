@@ -3,11 +3,11 @@ import { BOARD_BUFFER_HEIGHT, BOARD_TOTAL_HEIGHT, BOARD_WIDTH, checkCollision, n
 /** 입력: 실제 방어 보드·방해 줄 수·독립 시드 / 출력: 위로 밀린 보드와 넘침 판정. 네트워크와 무관하다. */
 export function addGarbage(state: EngineState, count: number, seed: number): { state: EngineState; seed: number } {
   if (state.status !== "playing" || !Number.isInteger(count) || count <= 0) return { state, seed };
-  const rows = Math.min(8, count), random = nextRandom(seed), gap = Math.floor(random.value * BOARD_WIDTH);
+  const rows = Math.min(BOARD_TOTAL_HEIGHT, count), random = nextRandom(seed), gap = Math.floor(random.value * BOARD_WIDTH);
   const bottom = Array.from({ length: rows }, () => Array.from({ length: BOARD_WIDTH }, (_, x) => x === gap ? null : "J" as const));
   const board = [...state.board.slice(rows).map(row => [...row]), ...bottom];
   const active = state.active ? { ...state.active, position: { ...state.active.position, y: state.active.position.y - rows } } : null;
-  const overflow = board.slice(0, BOARD_BUFFER_HEIGHT).some(row => row.some(cell => cell !== null)) || !!(active && checkCollision(board, active));
+  const overflow = state.board.slice(0, rows).some(row => row.some(cell => cell !== null)) || board.slice(0, BOARD_BUFFER_HEIGHT).some(row => row.some(cell => cell !== null)) || !!(active && checkCollision(board, active));
   return { state: { ...state, board, active, status: overflow ? "gameover" : "playing" }, seed: random.state };
 }
 

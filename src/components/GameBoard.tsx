@@ -35,6 +35,7 @@ import type { ShakeTrigger } from "../hooks/useEffects";
 const CELL_SIZE = 30;
 const BOARD_PIXEL_WIDTH = BOARD_WIDTH * CELL_SIZE;
 const BOARD_PIXEL_HEIGHT = BOARD_VISIBLE_HEIGHT * CELL_SIZE;
+const NO_TARGETS: readonly Position[] = [];
 
 /** 내부 파티클 하나의 물리 상태 (React 상태가 아닌 ref 배열로만 관리) */
 interface Particle {
@@ -59,6 +60,7 @@ export interface GameBoardProps {
   readonly shake: ShakeTrigger | null;
   /** true면 캔버스를 부모 너비에 맞춰 유동적으로 축소한다 (모바일 전용, 데스크톱 레이아웃은 영향 없음) */
   readonly responsive?: boolean;
+  readonly targetCells?: readonly Position[];
 }
 
 /** 라인 클리어 카테고리별 플래시/파티클 색상 */
@@ -120,6 +122,7 @@ function GameBoardComponent({
   hardDropTrail,
   shake,
   responsive = false,
+  targetCells = NO_TARGETS,
 }: GameBoardProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   // responsive 모드에서 부모가 실제로 내준 가로/세로 공간을 측정해, "object-fit: contain"으로
@@ -130,8 +133,8 @@ function GameBoardComponent({
   const [responsiveSize, setResponsiveSize] = useState<{ width: number; height: number } | null>(null);
 
   // 최신 props를 내부 rAF 루프에서 참조하기 위한 ref (React state로 관리하면 매 프레임 재렌더링 필요)
-  const propsRef = useRef({ board, active, ghost, status });
-  propsRef.current = { board, active, ghost, status };
+  const propsRef = useRef({ board, active, ghost, status, targetCells });
+  propsRef.current = { board, active, ghost, status, targetCells };
 
   const particlesRef = useRef<Particle[]>([]);
   const flashRef = useRef<{ color: string; startedAt: number; durationMs: number } | null>(null);
@@ -294,6 +297,15 @@ function GameBoardComponent({
         }
       }
 
+      // 목표 블록은 기존 색을 유지하고 이중 대비 마름모로 구분한다. 엔진에는 일반 블록이다.
+      for (const cell of propsRef.current.targetCells) {
+        if (cell.y < BOARD_BUFFER_HEIGHT || !currentBoard[cell.y]?.[cell.x]) continue;
+        const x = (cell.x + .5) * CELL_SIZE, y = (cell.y - BOARD_BUFFER_HEIGHT + .5) * CELL_SIZE;
+        ctx.beginPath(); ctx.moveTo(x, y - 7); ctx.lineTo(x + 7, y); ctx.lineTo(x, y + 7); ctx.lineTo(x - 7, y); ctx.closePath();
+        ctx.strokeStyle = "#101018"; ctx.lineWidth = 5; ctx.stroke();
+        ctx.strokeStyle = "#ffffff"; ctx.lineWidth = 2.5; ctx.stroke();
+      }
+
       // 하드 드롭 잔상 (페이드아웃되는 낙하 궤적)
       const trail = trailRef.current;
       if (trail) {
@@ -398,7 +410,7 @@ function GameBoardComponent({
       <canvas
         ref={canvasRef}
         role="img"
-        aria-label={`쿼드 게임판, 10열 20행. ${status === "gameover" ? "게임 종료." : active ? `현재 ${active.type} 블록, ${active.position.x + 1}열, ${Math.max(0, active.position.y - 19)}행. ${ghost ? `낙하 예상 ${Math.max(0, ghost.position.y - 19)}행.` : ""}` : "시작 대기 중."}`}
+        aria-label={`쿼드 게임판, 10열 20행. ${status === "gameover" ? "게임 종료." : active ? `현재 ${active.type} 블록, ${active.position.x + 1}열, ${Math.max(0, active.position.y - 19)}행. ${ghost ? `낙하 예상 ${Math.max(0, ghost.position.y - 19)}행.` : ""}` : "시작 대기 중."}${targetCells.length ? ` 목표 블록 ${targetCells.length}개: ${targetCells.map(cell => `${cell.x + 1}열 ${cell.y - BOARD_BUFFER_HEIGHT + 1}행`).join(", ")}.` : ""}`}
         style={
           responsive
             // 측정된 실제 크기를 캔버스 CSS 크기 자체로 그대로 사용한다 - object-fit이 아니므로

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { applyAction, createInitialState, type EngineAction, type EngineState } from "../../src/engine";
+import { applyAction, createInitialState, getShapeCells, type EngineAction, type EngineState } from "../../src/engine";
 import { STAGES, makeStageBoard, type StageDefinition } from "../../src/campaign/stages";
 import { advanceTargetRows, getCampaignRun, reduceCampaign } from "../../src/campaign/session";
 import { chooseOpponentActions } from "../../src/campaign/opponent";
@@ -11,15 +11,15 @@ describe("campaign contracts", () => {
   it("has fifty stages and ten overflow duels with the approved difficulty ceiling", () => {
     expect(STAGES).toHaveLength(50);
     expect(STAGES.filter(s => s.kind === "duel").map(s => s.id)).toEqual([5,10,15,20,25,30,35,40,45,50]);
-    expect(new Set(STAGES.map(s => s.kind))).toEqual(new Set(["lines", "timed", "survival", "duel"]));
+    expect(new Set(STAGES.map(s => s.kind))).toEqual(new Set(["mission", "timed", "survival", "duel"]));
     expect(STAGES.every(s => !s.reverseControls && !s.pieceLimit && !s.pressureMs)).toBe(true);
     expect(STAGES.filter(s => s.isBoss).map(s => [s.id, s.difficulty])).toEqual([[10,1.5],[20,2],[30,3],[40,3.5],[50,4]]);
     expect(STAGES.every(s => s.difficulty >= .5 && s.difficulty <= 4 && Number.isInteger(s.difficulty * 2))).toBe(true);
-    expect(STAGES.filter(s => s.kind === "survival").map(s => s.surviveMs)).toEqual([75000,90000,90000,105000]);
+    expect(STAGES.filter(s => s.kind === "survival").map(s => s.surviveMs)).toEqual([60000,75000,80000,90000]);
     for (const boss of STAGES.filter(s => s.isBoss)) {
       const middle = STAGES[boss.id - 6];
       expect(boss.aiMoveMs!).toBeLessThan(middle.aiMoveMs!);
-      expect(boss.aiHandicapRows).toBe(0); expect(middle.aiHandicapRows).toBe(0);
+      expect(boss.aiHandicapRows).toBe(0); expect(middle.aiHandicapRows).toBeGreaterThanOrEqual(0);
       expect(boss.aiLookahead).toBe(true); expect(middle.aiLookahead).toBe(false);
     }
   });
@@ -82,16 +82,18 @@ describe("campaign contracts", () => {
     expect(getCampaignRun(state)!.ai!.board).not.toEqual(ai.board);
     expect(getCampaignRun(state)?.outcome).toBe("playing");
   });
-  it("clearing a line sends real garbage; only overflow wins the duel", () => {
-    const stage: StageDefinition = { ...STAGES[4], layers: [{ rows: 1, gap: 3, width: 4 }], sequence: ["I"] }; let state = reduceCampaign(fresh(), { type: "START" }, stage);
+  it("a double sends real garbage; a fresh single does not; only overflow wins the duel", () => {
+    const stage: StageDefinition = { ...STAGES[4], aiHandicapRows: 0, layers: [{ rows: 2, gap: 4, width: 2 }], sequence: ["O"] }; let state = reduceCampaign(fresh(), { type: "START" }, stage);
     state = reduceCampaign(state, { type: "HARD_DROP" }, stage);
     expect(getCampaignRun(state)?.sent).toBe(1);
     expect(getCampaignRun(state)?.outcome).toBe("playing");
     expect(getCampaignRun(state)!.ai!.board[39].filter(c => c !== null)).toHaveLength(9);
+    const single = { ...stage, layers: [{ rows: 1, gap: 3, width: 4 }], sequence: ["I" as const] };
+    expect(getCampaignRun(reduceCampaign(reduceCampaign(fresh(), { type: "START" }, single), { type: "HARD_DROP" }, single))?.sent).toBe(0);
     const run = getCampaignRun(state)!;
     const highBoard = run.ai!.board.map(row => [...row]); highBoard[20][0] = "J";
     const almost = { ...state, campaign: { ...run, ai: { ...run.ai!, board: highBoard } } };
-    // Use a valid one-line-ready player board while keeping the almost-overflowing AI.
+    // Use a valid double-ready board while keeping the almost-overflowing AI.
     const prepared = reduceCampaign(fresh(), { type: "START" }, stage);
     const won = reduceCampaign({ ...prepared, campaign: almost.campaign } as EngineState, { type: "HARD_DROP" }, stage);
     expect(getCampaignRun(won)?.reason).toBe("ai-topout");

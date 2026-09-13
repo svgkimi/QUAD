@@ -1,0 +1,190 @@
+{
+  "build": "df77e3444bdb4f502dc09b45cef38221d3dd21c5af4a4bdd30832dba2c4aad73",
+  "device": "QUAD Basic50 QA — iPhone 16",
+  "udid": "95B30CB4-4355-4E6F-BB51-50DC8534A662",
+  "os": "iOS 26.5 (23F77)",
+  "xcode": "26.6 (17F113)",
+  "host": "Simulator WKWebView; compact is a constrained view on the SAME simulator, not another physical device",
+  "qaBundleId": "dev.quad.preview.basic50qa",
+  "note": "54 UI cases per view. Fixed QA seeds/keyboard events for four actual clears, not realistic human play speed. Native app normal bundle excludes instrumentation. Sequential unlock and reload preservation additionally covered by component tests.",
+  "summaries": [
+    {
+      "viewport": [
+        393,
+        759
+      ],
+      "stageChecks": 50,
+      "clearChecks": [
+        {
+          "phase": "clear-checked",
+          "stage": 1,
+          "seed": 1,
+          "moves": "LLLDDCRRDDCCLDRRRRDCLLLLDRRRRD",
+          "stars": 3,
+          "persisted": true,
+          "result": "스테이지 클리어!×0.8초 · 최고 3별1별클리어2별100초 이내3별67초 이내목표를 달성해야 별을 얻어요.현재 기록: 0.8초다음 스테이지한 번 더 플레이단계 목록"
+        },
+        {
+          "phase": "clear-checked",
+          "stage": 3,
+          "seed": 8,
+          "moves": "LLLD",
+          "stars": 3,
+          "persisted": true,
+          "result": "스테이지 클리어!×0.1초 · 최고 3별1별클리어2별100초 이내3별67초 이내목표를 달성해야 별을 얻어요.여러 번 나눠 지운 줄은 합산하지 않아요.현재 기록: 0.1초다음 스테이지한 번 더 플레이단계 목록"
+        },
+        {
+          "phase": "clear-checked",
+          "stage": 6,
+          "seed": 7,
+          "moves": "RDRD",
+          "stars": 3,
+          "persisted": true,
+          "result": "스테이지 클리어!×0.1초 · 최고 3별1별클리어2별100초 이내3별67초 이내목표를 달성해야 별을 얻어요.◇ 표시 블록이 있는 가로줄을 채워 없애세요.현재 기록: 0.1초다음 스테이지한 번 더 플레이단계 목록"
+        },
+        {
+          "phase": "clear-checked",
+          "stage": 12,
+          "seed": 7,
+          "moves": "CLLLLD",
+          "stars": 3,
+          "persisted": true,
+          "result": "스테이지 클리어!×0.1초 · 최고 3별1별클리어2별120초 이내3별81초 이내목표를 달성해야 별을 얻어요.여러 번 나눠 지운 줄은 합산하지 않아요.현재 기록: 0.1초다음 스테이지한 번 더 플레이단계 목록"
+        }
+      ],
+      "board": {
+        "x": 52,
+        "y": 54,
+        "w": 289,
+        "h": 578
+      },
+      "minButtonWidth": 70.734375,
+      "minButtonHeight": 53.125,
+      "captures": [
+        "rules-v2-main",
+        "rules-v2-stages",
+        "rules-v2-intro-1",
+        "rules-v2-play-1",
+        "rules-v2-criteria-1",
+        "rules-v2-intro-3",
+        "rules-v2-play-3",
+        "rules-v2-criteria-3",
+        "rules-v2-intro-5",
+        "rules-v2-play-5",
+        "rules-v2-criteria-5",
+        "rules-v2-pause-5",
+        "rules-v2-intro-6",
+        "rules-v2-play-6",
+        "rules-v2-criteria-6",
+        "rules-v2-intro-10",
+        "rules-v2-play-10",
+        "rules-v2-criteria-10",
+        "rules-v2-intro-12",
+        "rules-v2-play-12",
+        "rules-v2-criteria-12",
+        "rules-v2-intro-14",
+        "rules-v2-play-14",
+        "rules-v2-criteria-14",
+        "rules-v2-intro-49",
+        "rules-v2-play-49",
+        "rules-v2-criteria-49",
+        "rules-v2-intro-50",
+        "rules-v2-play-50",
+        "rules-v2-criteria-50",
+        "rules-v2-result-1",
+        "rules-v2-result-3",
+        "rules-v2-result-6",
+        "rules-v2-result-12"
+      ]
+    },
+    {
+      "viewport": [
+        320,
+        568
+      ],
+      "stageChecks": 50,
+      "clearChecks": [
+        {
+          "phase": "clear-checked",
+          "stage": 1,
+          "seed": 1,
+          "moves": "LLLDDCRRDDCCLDRRRRDCLLLLDRRRRD",
+          "stars": 3,
+          "persisted": true,
+          "result": "스테이지 클리어!×0.8초 · 최고 3별1별클리어2별100초 이내3별67초 이내목표를 달성해야 별을 얻어요.현재 기록: 0.8초다음 스테이지한 번 더 플레이단계 목록"
+        },
+        {
+          "phase": "clear-checked",
+          "stage": 3,
+          "seed": 8,
+          "moves": "LLLD",
+          "stars": 3,
+          "persisted": true,
+          "result": "스테이지 클리어!×0.1초 · 최고 3별1별클리어2별100초 이내3별67초 이내목표를 달성해야 별을 얻어요.여러 번 나눠 지운 줄은 합산하지 않아요.현재 기록: 0.1초다음 스테이지한 번 더 플레이단계 목록"
+        },
+        {
+          "phase": "clear-checked",
+          "stage": 6,
+          "seed": 7,
+          "moves": "RDRD",
+          "stars": 3,
+          "persisted": true,
+          "result": "스테이지 클리어!×0.1초 · 최고 3별1별클리어2별100초 이내3별67초 이내목표를 달성해야 별을 얻어요.◇ 표시 블록이 있는 가로줄을 채워 없애세요.현재 기록: 0.1초다음 스테이지한 번 더 플레이단계 목록"
+        },
+        {
+          "phase": "clear-checked",
+          "stage": 12,
+          "seed": 7,
+          "moves": "CLLLLD",
+          "stars": 3,
+          "persisted": true,
+          "result": "스테이지 클리어!×0.2초 · 최고 3별1별클리어2별120초 이내3별81초 이내목표를 달성해야 별을 얻어요.여러 번 나눠 지운 줄은 합산하지 않아요.현재 기록: 0.2초다음 스테이지한 번 더 플레이단계 목록"
+        }
+      ],
+      "board": {
+        "x": 60.5,
+        "y": 54,
+        "w": 199,
+        "h": 398
+      },
+      "minButtonWidth": 64,
+      "minButtonHeight": 48,
+      "captures": [
+        "rules-v2-main",
+        "rules-v2-stages",
+        "rules-v2-intro-1",
+        "rules-v2-play-1",
+        "rules-v2-criteria-1",
+        "rules-v2-intro-3",
+        "rules-v2-play-3",
+        "rules-v2-criteria-3",
+        "rules-v2-intro-5",
+        "rules-v2-play-5",
+        "rules-v2-criteria-5",
+        "rules-v2-pause-5",
+        "rules-v2-intro-6",
+        "rules-v2-play-6",
+        "rules-v2-criteria-6",
+        "rules-v2-intro-10",
+        "rules-v2-play-10",
+        "rules-v2-criteria-10",
+        "rules-v2-intro-12",
+        "rules-v2-play-12",
+        "rules-v2-criteria-12",
+        "rules-v2-intro-14",
+        "rules-v2-play-14",
+        "rules-v2-criteria-14",
+        "rules-v2-intro-49",
+        "rules-v2-play-49",
+        "rules-v2-criteria-49",
+        "rules-v2-intro-50",
+        "rules-v2-play-50",
+        "rules-v2-criteria-50",
+        "rules-v2-result-1",
+        "rules-v2-result-3",
+        "rules-v2-result-6",
+        "rules-v2-result-12"
+      ]
+    }
+  ]
+}

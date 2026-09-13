@@ -48,8 +48,12 @@ function placements(state: EngineState): { actions: readonly EngineAction[]; sta
 /** 입력: 실제 상태·보스 여부 / 출력: 합법 액션. 보스만 상위 2개 후보의 NEXT까지 읽는다(최대 144배치). */
 export function chooseOpponentActions(state: EngineState, lookahead = false, imperfect = false): readonly EngineAction[] {
   const candidates = placements(state);
-  // 초반 AI도 계속 플레이하되 주기적으로 두 번째 안전 후보를 선택한다.
-  if (imperfect && candidates[1]?.state.status === "playing") return candidates[1].actions;
+  // O 회전처럼 같은 보드인 후보는 '실수'가 아니다. 실제로 다른 안전 배치를 선택한다.
+  if (imperfect && candidates.length) {
+    const bestBoard = JSON.stringify(candidates[0].state.board);
+    const alternative = candidates.find(candidate => candidate.state.status === "playing" && JSON.stringify(candidate.state.board) !== bestBoard);
+    if (alternative) return alternative.actions;
+  }
   if (!lookahead || candidates.length === 0) return candidates[0]?.actions ?? [];
   let best = candidates[0], bestScore = -Infinity;
   for (const candidate of candidates.slice(0, 2)) {

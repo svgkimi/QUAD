@@ -5,6 +5,7 @@ import { viteSingleFile } from "vite-plugin-singlefile";
 // 더블클릭만으로 실행되는 단일 HTML 파일(tetris-standalone.html)을 만들기 위한 전용 빌드 설정.
 // 일반 배포용 `npm run build`(vite.config.ts)와는 분리해, JS/CSS를 전부 index.html 안에 인라인한다.
 export default defineConfig({
+  define: { __QUAD_DEVELOPER_STAGE_ACCESS__: false },
   plugins: [react(), viteSingleFile()],
   build: {
     outDir: "dist-standalone",

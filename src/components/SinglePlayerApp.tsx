@@ -8,6 +8,7 @@
  */
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { flushSync } from "react-dom";
 import { applyAction, calculateSpeedMultiplier, createInitialState, previewNext, type EngineState, type EngineAction } from "../engine";
 import { useGameEngine } from "../hooks/useGameEngine";
 import { useEffects } from "../hooks/useEffects";
@@ -15,7 +16,9 @@ import { useSound } from "../hooks/useSound";
 import { useHighScore } from "../hooks/useHighScore";
 import { useIsMobile } from "../hooks/useIsMobile";
 import { getStage, STAGES } from "../campaign/stages";
-import { earnedStageStars } from "../campaign/stars";
+import { canStartStage, DEVELOPER_STAGE_ACCESS } from "../campaign/access";
+import { compactStageGoal, earnedStageStars } from "../campaign/stars";
+import { StageCriteria } from "./StageCriteria";
 import { StageStars } from "./StageStars";
 import { getCampaignRun, reduceCampaign } from "../campaign/session";
 import { useCampaignProgress } from "../hooks/useCampaignProgress";
@@ -57,21 +60,22 @@ function SinglePlayerApp() {
   const [phase, setPhase] = useState<AppPhase>("title");
   const [showGuide, setShowGuide] = useState(false);
   const [showControlEditor, setShowControlEditor] = useState(false);
+  const [showStageCriteria, setShowStageCriteria] = useState(false);
   const controls = useControlLayout();
   const [showStages, setShowStages] = useState(false);
   const [stageId, setStageId] = useState<number | null>(null);
   const stage = stageId === null ? undefined : getStage(stageId);
-  const progress = useCampaignProgress(showStages || stageId !== null);
+  const progress = useCampaignProgress(!DEVELOPER_STAGE_ACCESS && (showStages || stageId !== null));
   const sessionReducer = useCallback((current: EngineState, action: EngineAction) => stage ? reduceCampaign(current, action, stage) : applyAction(current, action), [stage]);
   const [confirmExit, setConfirmExit] = useState<"restart" | "main" | null>(null);
   const { enabled: soundEnabled, toggle: toggleSound, sounds, music, storageError } = useSound();
   const { state: engineState, ghost: engineGhost, hardDropTrail: engineTrail, start, restart, pause, resume, dispatch, triggerHardDrop } = useGameEngine({
-    reducer: sessionReducer, sounds, enabled: phase === "game" && !showGuide && !confirmExit && !showControlEditor,
+    reducer: sessionReducer, sounds, enabled: phase === "game" && !showGuide && !confirmExit && !showControlEditor && !showStageCriteria,
   });
   const campaignRun = getCampaignRun(engineState);
   const finishedStage = phase === "game" && stage && campaignRun?.stageId === stage.id && campaignRun.outcome !== "playing";
   const earnedStars = stage ? earnedStageStars(stage, engineState) : 0;
-  useEffect(() => { if (phase === "game" && campaignRun?.outcome === "cleared") progress.complete(campaignRun.stageId, earnedStars); }, [phase, campaignRun?.outcome, campaignRun?.stageId, earnedStars, progress.complete]);
+  useEffect(() => { if (!DEVELOPER_STAGE_ACCESS && phase === "game" && campaignRun?.outcome === "cleared") progress.complete(campaignRun.stageId, earnedStars); }, [phase, campaignRun?.outcome, campaignRun?.stageId, earnedStars, progress.complete]);
   const state = phase === "countdown" ? READY_PREVIEW : engineState;
   const ghost = phase === "countdown" ? null : engineGhost;
   const hardDropTrail = phase === "countdown" ? null : engineTrail;
@@ -157,11 +161,15 @@ function SinglePlayerApp() {
 
   /** 입력: 해금된 단계 번호 / 출력: 해당 스테이지의 새 카운트다운. */
   const beginStage = (id: number) => {
-    if (!progress.ready || !getStage(id) || id > progress.completed + 1) return;
-    setStageId(id); setShowStages(false); setShowGuide(false); setShowControlEditor(false);
+    if (!canStartStage(id, progress.completed, progress.ready, DEVELOPER_STAGE_ACCESS)) return;
+    setStageId(id); setShowStages(false); setShowGuide(false); setShowControlEditor(false); setShowStageCriteria(false);
     handleStartClick();
   };
   const stageList = () => { handleMainMenu(); setShowStages(true); };
+  /** 입력: 목표 표시 클릭 / 출력: 게임을 먼저 정지하고 조건 창을 연다. */
+  const openStageCriteria = () => { pause(); setShowStageCriteria(true); };
+  /** 입력: 명시적인 계속하기 클릭 / 출력: 창 닫힘·입력 허용을 반영한 뒤 재개. 숨김 상태 검사는 엔진 훅이 유지한다. */
+  const resumeFromStageCriteria = () => { flushSync(() => setShowStageCriteria(false)); resume(); };
 
   // 넥스트 큐 미리보기(5개)는 pieceQueue 참조가 바뀔 때만 새로 계산한다.
   const nextPreview = useMemo(() => phase === "countdown" ? [] : previewNext(state.pieceQueue, 5), [phase, state.pieceQueue]);
@@ -183,6 +191,7 @@ function SinglePlayerApp() {
         {phase === "title" && (
           <TitleScreen
             highScore={highScore}
+            developerStageAccess={DEVELOPER_STAGE_ACCESS}
             soundEnabled={soundEnabled}
             onStart={() => { setStageId(null); handleStartClick(); }}
             onOpenStages={() => setShowStages(true)}
@@ -218,6 +227,7 @@ function SinglePlayerApp() {
               <GameBoard
                 key={phase === "countdown" ? "ready" : "game"}
                 board={state.board}
+                targetCells={phase === "game" ? campaignRun?.targetCells : undefined}
                 active={state.active}
                 ghost={ghost}
                 status={state.status}
@@ -228,8 +238,8 @@ function SinglePlayerApp() {
               />
               {phase === "game" && state.lastScoreEvent && <EffectPopups popups={popups} />}
               {phase === "countdown" && countdownValue !== null && <CountdownOverlay value={countdownValue} />}
-              {phase === "game" && state.status === "paused" && !finishedStage && !showGuide && !confirmExit && !showControlEditor && (
-                <PauseOverlay onResume={resume} onRestart={() => setConfirmExit("restart")} onMainMenu={() => setConfirmExit("main")} onHelp={() => setShowGuide(true)} />
+              {phase === "game" && state.status === "paused" && !finishedStage && !showGuide && !confirmExit && !showControlEditor && !showStageCriteria && (
+                <PauseOverlay onResume={resume} onRestart={() => setConfirmExit("restart")} onMainMenu={() => setConfirmExit("main")} onHelp={() => setShowGuide(true)} onStageCriteria={stage ? openStageCriteria : undefined} />
               )}
               {phase === "game" && state.status === "gameover" && !stage && (
                 <GameOverScreen
@@ -243,7 +253,7 @@ function SinglePlayerApp() {
             </div>
 
             <div className="flex flex-col gap-4 pt-1">
-              {stage && <StageHud stage={stage} run={phase === "countdown" ? null : campaignRun} lines={state.totalLinesCleared} />}
+              {stage && <StageHud stage={stage} run={phase === "countdown" ? null : campaignRun} lines={state.totalLinesCleared} onShowCriteria={phase === "game" && !finishedStage ? openStageCriteria : undefined} />}
               <ScoreBoard
                 score={state.score}
                 level={state.level}
@@ -281,7 +291,7 @@ function SinglePlayerApp() {
                   )}
                 </button>
                 <div className="flex-1 text-center">
-                  {stage ? <StageHud stage={stage} run={phase === "countdown" ? null : campaignRun} lines={state.totalLinesCleared} /> : <><div className="font-mono text-[clamp(1.25rem,3dvh,1.75rem)] font-black leading-tight tracking-tight text-white drop-shadow-[0_0_14px_rgba(34,211,238,0.35)]">
+                  {stage ? <StageHud stage={stage} run={phase === "countdown" ? null : campaignRun} lines={state.totalLinesCleared} onShowCriteria={phase === "game" && !finishedStage ? openStageCriteria : undefined} /> : <><div className="font-mono text-[clamp(1.25rem,3dvh,1.75rem)] font-black leading-tight tracking-tight text-white drop-shadow-[0_0_14px_rgba(34,211,238,0.35)]">
                     {state.score.toLocaleString("en-US")}
                   </div>
                   <div className="text-[8px] font-semibold tracking-widest text-white/60">
@@ -335,6 +345,7 @@ function SinglePlayerApp() {
                 <GameBoard
                   key={phase === "countdown" ? "ready" : "game"}
                   board={state.board}
+                  targetCells={phase === "game" ? campaignRun?.targetCells : undefined}
                   active={state.active}
                   ghost={ghost}
                   status={state.status}
@@ -345,8 +356,8 @@ function SinglePlayerApp() {
                 />
                 {phase === "game" && state.lastScoreEvent && <EffectPopups popups={popups} />}
                 {phase === "countdown" && countdownValue !== null && <CountdownOverlay value={countdownValue} />}
-                {phase === "game" && state.status === "paused" && !finishedStage && !showGuide && !confirmExit && !showControlEditor && (
-                  <PauseOverlay onResume={resume} onRestart={() => setConfirmExit("restart")} onMainMenu={() => setConfirmExit("main")} onHelp={() => setShowGuide(true)} onCustomizeControls={() => setShowControlEditor(true)} />
+                {phase === "game" && state.status === "paused" && !finishedStage && !showGuide && !confirmExit && !showControlEditor && !showStageCriteria && (
+                  <PauseOverlay onResume={resume} onRestart={() => setConfirmExit("restart")} onMainMenu={() => setConfirmExit("main")} onHelp={() => setShowGuide(true)} onCustomizeControls={() => setShowControlEditor(true)} onStageCriteria={stage ? openStageCriteria : undefined} />
                 )}
                 {phase === "game" && state.status === "gameover" && !stage && (
                   <GameOverScreen
@@ -373,24 +384,27 @@ function SinglePlayerApp() {
           </div>
         )}
       </div>
-      {showStages && <StageSelect completed={progress.completed} stars={progress.stars} ready={progress.ready} error={progress.status === "error"} onRetry={progress.retry} onStart={beginStage} onClose={() => setShowStages(false)} />}
-      {finishedStage && stage && campaignRun && <Modal title={campaignRun.outcome === "cleared" ? stage.id === STAGES.length ? `${STAGES.length}개 스테이지 모두 클리어!` : "스테이지 클리어!" : "다시 도전해볼까요?"}
+      {showStages && <StageSelect developerAccess={DEVELOPER_STAGE_ACCESS} completed={progress.completed} stars={progress.stars} ready={progress.ready} error={progress.status === "error"} onRetry={progress.retry} onStart={beginStage} onClose={() => setShowStages(false)} />}
+      {finishedStage && stage && campaignRun && <Modal title={campaignRun.outcome === "cleared" ? !DEVELOPER_STAGE_ACCESS && stage.id === STAGES.length ? `${STAGES.length}개 스테이지 모두 클리어!` : "스테이지 클리어!" : "다시 도전해볼까요?"}
         description={campaignRun.outcome === "cleared" ? undefined : campaignRun.reason === "pieces" ? "블록을 모두 썼어요." : campaignRun.reason === "timeout" ? "시간이 다 됐어요." : "보드가 가득 찼어요."}
         onClose={stageList}>
         <div className="space-y-3">
           {campaignRun.outcome === "cleared" && <div className="pb-4 text-center">
             <StageStars count={earnedStars} size={48} />
-            <p className="mt-2 text-sm tabular-nums text-white/70">{(campaignRun.elapsedMs / 1000).toFixed(1)}초 · 최고 {Math.max(earnedStars, progress.stars[stage.id] ?? 0)}별</p>
+            <p className="mt-2 text-sm tabular-nums text-white/70">{(campaignRun.elapsedMs / 1000).toFixed(1)}초 · {DEVELOPER_STAGE_ACCESS ? `이번 연습 ${earnedStars}별` : `최고 ${Math.max(earnedStars, progress.stars[stage.id] ?? 0)}별`}</p>
           </div>}
+          {DEVELOPER_STAGE_ACCESS && <p className="text-center text-xs text-amber-200">개발자 연습 · 별과 클리어 기록은 저장하지 않아요.</p>}
+          <StageCriteria stage={stage} run={campaignRun} lines={state.totalLinesCleared} />
           {progress.status === "error" && <div role="status" className="text-sm text-amber-100">진행 기록을 저장하지 못했어요. 앱을 닫기 전에 다시 저장해 주세요.<button type="button" className="mt-2 min-h-11 w-full rounded-xl border border-amber-200/40" onClick={progress.retry}>기록 다시 저장</button></div>}
           {progress.status === "saving" && <p role="status" className="text-xs text-white/65">진행 기록 저장 중…</p>}
-          {campaignRun.outcome === "cleared" && stage.id < STAGES.length && <button type="button" disabled={progress.completed < stage.id} onClick={() => beginStage(stage.id + 1)} className="min-h-14 w-full rounded-xl bg-cyan-300 font-bold text-black disabled:opacity-40">다음 스테이지</button>}
+          {campaignRun.outcome === "cleared" && stage.id < STAGES.length && <button type="button" disabled={!DEVELOPER_STAGE_ACCESS && progress.completed < stage.id} onClick={() => beginStage(stage.id + 1)} className="min-h-14 w-full rounded-xl bg-cyan-300 font-bold text-black disabled:opacity-40">다음 스테이지</button>}
           <button type="button" onClick={() => beginStage(stage.id)} className="min-h-12 w-full rounded-xl border border-white/25 text-white">{campaignRun.outcome === "cleared" ? "한 번 더 플레이" : "다시 도전"}</button>
           <button type="button" onClick={stageList} className="min-h-11 w-full text-sm text-white/75">단계 목록</button>
         </div>
       </Modal>}
       {saveStatus === "error" && <p role="status" className="fixed left-1/2 top-2 z-[110] w-[90%] max-w-md -translate-x-1/2 rounded-lg bg-[#252018] p-2 text-center text-xs text-amber-100">기록 저장을 확인하지 못했어요. 이번 실행의 기록은 유지되지만 앱을 닫으면 사라질 수 있어요.</p>}
       {showGuide && <ControlsGuide isMobile={isMobile} onClose={() => setShowGuide(false)} />}
+      {showStageCriteria && stage && <Modal title="목표와 별 조건" description={compactStageGoal(stage)} onClose={() => setShowStageCriteria(false)}><StageCriteria stage={stage} run={campaignRun} lines={state.totalLinesCleared} /><button type="button" className="mt-4 min-h-11 w-full rounded-xl bg-cyan-300 font-bold text-black" onClick={resumeFromStageCriteria}>계속하기</button></Modal>}
       {showControlEditor && <ControlLayoutEditor board={state.board} layout={controls.layout} ready={controls.ready} loadError={controls.error} onSave={controls.save} onClose={() => setShowControlEditor(false)} />}
       {confirmExit && <Modal title={confirmExit === "main" ? "메인으로 돌아갈까요?" : "다시 시작할까요?"}
         description={stage ? "현재 도전은 종료돼요. 이미 클리어한 스테이지 기록은 유지돼요." : "현재 게임은 종료돼요. 완료하지 않은 이번 판의 점수는 최고 기록에 반영되지 않아요."}

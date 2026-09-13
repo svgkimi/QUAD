@@ -1,0 +1,1582 @@
+[
+  {
+    "id": 1,
+    "kind": "timed",
+    "goal": "150초 안에 3줄 지우기",
+    "target": 3,
+    "targetCells": [],
+    "difficulty": 0.5,
+    "gravityMs": 1000,
+    "limitMs": 150000,
+    "surviveMs": null,
+    "layers": [],
+    "aiMoveMs": null,
+    "aiHandicapRows": null,
+    "stars": [
+      "클리어",
+      "100초 이내",
+      "67초 이내"
+    ],
+    "developerScenario": "선택 → 목표·별 확인 → 새 랜덤 순서 시작 → 해당 목표 달성 → 결과·별 저장·다음 단계. 도중 목표를 누르면 정지하여 조건 확인, 계속하기로 재개. 제한 시간 소진/보드 넘침은 실패."
+  },
+  {
+    "id": 2,
+    "kind": "timed",
+    "goal": "150초 안에 4줄 지우기",
+    "target": 4,
+    "targetCells": [],
+    "difficulty": 0.5,
+    "gravityMs": 1000,
+    "limitMs": 150000,
+    "surviveMs": null,
+    "layers": [],
+    "aiMoveMs": null,
+    "aiHandicapRows": null,
+    "stars": [
+      "클리어",
+      "100초 이내",
+      "67초 이내"
+    ],
+    "developerScenario": "선택 → 목표·별 확인 → 새 랜덤 순서 시작 → 해당 목표 달성 → 결과·별 저장·다음 단계. 도중 목표를 누르면 정지하여 조건 확인, 계속하기로 재개. 제한 시간 소진/보드 넘침은 실패."
+  },
+  {
+    "id": 3,
+    "kind": "mission",
+    "goal": "150초 안에 한 번에 2줄 이상 지우기",
+    "target": 2,
+    "targetCells": [],
+    "difficulty": 0.5,
+    "gravityMs": 1000,
+    "limitMs": 150000,
+    "surviveMs": null,
+    "layers": [
+      {
+        "rows": 2,
+        "gap": 1,
+        "width": 2
+      }
+    ],
+    "aiMoveMs": null,
+    "aiHandicapRows": null,
+    "stars": [
+      "클리어",
+      "100초 이내",
+      "67초 이내"
+    ],
+    "developerScenario": "선택 → 목표·별 확인 → 새 랜덤 순서 시작 → 해당 목표 달성 → 결과·별 저장·다음 단계. 도중 목표를 누르면 정지하여 조건 확인, 계속하기로 재개. 제한 시간 소진/보드 넘침은 실패."
+  },
+  {
+    "id": 4,
+    "kind": "timed",
+    "goal": "150초 안에 5줄 지우기",
+    "target": 5,
+    "targetCells": [],
+    "difficulty": 1,
+    "gravityMs": 850,
+    "limitMs": 150000,
+    "surviveMs": null,
+    "layers": [],
+    "aiMoveMs": null,
+    "aiHandicapRows": null,
+    "stars": [
+      "클리어",
+      "100초 이내",
+      "67초 이내"
+    ],
+    "developerScenario": "선택 → 목표·별 확인 → 새 랜덤 순서 시작 → 해당 목표 달성 → 결과·별 저장·다음 단계. 도중 목표를 누르면 정지하여 조건 확인, 계속하기로 재개. 제한 시간 소진/보드 넘침은 실패."
+  },
+  {
+    "id": 5,
+    "kind": "duel",
+    "goal": "180초 안에 줄을 지워 방해 줄을 보내고 AI 보드를 넘치게 만들기",
+    "target": 0,
+    "targetCells": [],
+    "difficulty": 1,
+    "gravityMs": 850,
+    "limitMs": 180000,
+    "surviveMs": null,
+    "layers": [],
+    "aiMoveMs": 3200,
+    "aiHandicapRows": 3,
+    "stars": [
+      "클리어",
+      "144초 이내",
+      "99초 이내"
+    ],
+    "developerScenario": "선택 → 목표·별 확인 → 새 랜덤 순서 시작 → 해당 목표 달성 → 결과·별 저장·다음 단계. 도중 목표를 누르면 정지하여 조건 확인, 계속하기로 재개. 제한 시간 소진/보드 넘침은 실패."
+  },
+  {
+    "id": 6,
+    "kind": "timed",
+    "goal": "150초 안에 ◇ 표시 블록 4개 모두 제거하기",
+    "target": 4,
+    "targetCells": [
+      {
+        "x": 0,
+        "y": 39
+      },
+      {
+        "x": 9,
+        "y": 39
+      },
+      {
+        "x": 0,
+        "y": 38
+      },
+      {
+        "x": 9,
+        "y": 38
+      }
+    ],
+    "difficulty": 1,
+    "gravityMs": 850,
+    "limitMs": 150000,
+    "surviveMs": null,
+    "layers": [
+      {
+        "rows": 2,
+        "gap": 4,
+        "width": 4
+      }
+    ],
+    "aiMoveMs": null,
+    "aiHandicapRows": null,
+    "stars": [
+      "클리어",
+      "100초 이내",
+      "67초 이내"
+    ],
+    "developerScenario": "선택 → 목표·별 확인 → 새 랜덤 순서 시작 → 해당 목표 달성 → 결과·별 저장·다음 단계. 도중 목표를 누르면 정지하여 조건 확인, 계속하기로 재개. 제한 시간 소진/보드 넘침은 실패."
+  },
+  {
+    "id": 7,
+    "kind": "timed",
+    "goal": "140초 안에 5줄 지우기",
+    "target": 5,
+    "targetCells": [],
+    "difficulty": 1,
+    "gravityMs": 850,
+    "limitMs": 140000,
+    "surviveMs": null,
+    "layers": [],
+    "aiMoveMs": null,
+    "aiHandicapRows": null,
+    "stars": [
+      "클리어",
+      "93초 이내",
+      "63초 이내"
+    ],
+    "developerScenario": "선택 → 목표·별 확인 → 새 랜덤 순서 시작 → 해당 목표 달성 → 결과·별 저장·다음 단계. 도중 목표를 누르면 정지하여 조건 확인, 계속하기로 재개. 제한 시간 소진/보드 넘침은 실패."
+  },
+  {
+    "id": 8,
+    "kind": "timed",
+    "goal": "145초 안에 ◇ 표시 블록 4개 모두 제거하기",
+    "target": 4,
+    "targetCells": [
+      {
+        "x": 0,
+        "y": 39
+      },
+      {
+        "x": 9,
+        "y": 39
+      },
+      {
+        "x": 0,
+        "y": 38
+      },
+      {
+        "x": 9,
+        "y": 38
+      }
+    ],
+    "difficulty": 1,
+    "gravityMs": 850,
+    "limitMs": 145000,
+    "surviveMs": null,
+    "layers": [
+      {
+        "rows": 3,
+        "gap": 5,
+        "width": 4
+      }
+    ],
+    "aiMoveMs": null,
+    "aiHandicapRows": null,
+    "stars": [
+      "클리어",
+      "96초 이내",
+      "65초 이내"
+    ],
+    "developerScenario": "선택 → 목표·별 확인 → 새 랜덤 순서 시작 → 해당 목표 달성 → 결과·별 저장·다음 단계. 도중 목표를 누르면 정지하여 조건 확인, 계속하기로 재개. 제한 시간 소진/보드 넘침은 실패."
+  },
+  {
+    "id": 9,
+    "kind": "timed",
+    "goal": "130초 안에 6줄 지우기",
+    "target": 6,
+    "targetCells": [],
+    "difficulty": 1,
+    "gravityMs": 850,
+    "limitMs": 130000,
+    "surviveMs": null,
+    "layers": [],
+    "aiMoveMs": null,
+    "aiHandicapRows": null,
+    "stars": [
+      "클리어",
+      "86초 이내",
+      "58초 이내"
+    ],
+    "developerScenario": "선택 → 목표·별 확인 → 새 랜덤 순서 시작 → 해당 목표 달성 → 결과·별 저장·다음 단계. 도중 목표를 누르면 정지하여 조건 확인, 계속하기로 재개. 제한 시간 소진/보드 넘침은 실패."
+  },
+  {
+    "id": 10,
+    "kind": "duel",
+    "goal": "180초 안에 줄을 지워 방해 줄을 보내고 AI 보드를 넘치게 만들기",
+    "target": 0,
+    "targetCells": [],
+    "difficulty": 1.5,
+    "gravityMs": 650,
+    "limitMs": 180000,
+    "surviveMs": null,
+    "layers": [],
+    "aiMoveMs": 2600,
+    "aiHandicapRows": 0,
+    "stars": [
+      "클리어",
+      "144초 이내",
+      "99초 이내"
+    ],
+    "developerScenario": "선택 → 목표·별 확인 → 새 랜덤 순서 시작 → 해당 목표 달성 → 결과·별 저장·다음 단계. 도중 목표를 누르면 정지하여 조건 확인, 계속하기로 재개. 제한 시간 소진/보드 넘침은 실패."
+  },
+  {
+    "id": 11,
+    "kind": "timed",
+    "goal": "140초 안에 6줄 지우기",
+    "target": 6,
+    "targetCells": [],
+    "difficulty": 1,
+    "gravityMs": 850,
+    "limitMs": 140000,
+    "surviveMs": null,
+    "layers": [],
+    "aiMoveMs": null,
+    "aiHandicapRows": null,
+    "stars": [
+      "클리어",
+      "93초 이내",
+      "63초 이내"
+    ],
+    "developerScenario": "선택 → 목표·별 확인 → 새 랜덤 순서 시작 → 해당 목표 달성 → 결과·별 저장·다음 단계. 도중 목표를 누르면 정지하여 조건 확인, 계속하기로 재개. 제한 시간 소진/보드 넘침은 실패."
+  },
+  {
+    "id": 12,
+    "kind": "mission",
+    "goal": "180초 안에 한 번에 4줄 이상 지우기",
+    "target": 4,
+    "targetCells": [],
+    "difficulty": 1.5,
+    "gravityMs": 650,
+    "limitMs": 180000,
+    "surviveMs": null,
+    "layers": [
+      {
+        "rows": 4,
+        "gap": 1,
+        "width": 1
+      }
+    ],
+    "aiMoveMs": null,
+    "aiHandicapRows": null,
+    "stars": [
+      "클리어",
+      "120초 이내",
+      "81초 이내"
+    ],
+    "developerScenario": "선택 → 목표·별 확인 → 새 랜덤 순서 시작 → 해당 목표 달성 → 결과·별 저장·다음 단계. 도중 목표를 누르면 정지하여 조건 확인, 계속하기로 재개. 제한 시간 소진/보드 넘침은 실패."
+  },
+  {
+    "id": 13,
+    "kind": "timed",
+    "goal": "140초 안에 ◇ 표시 블록 6개 모두 제거하기",
+    "target": 6,
+    "targetCells": [
+      {
+        "x": 0,
+        "y": 39
+      },
+      {
+        "x": 9,
+        "y": 39
+      },
+      {
+        "x": 0,
+        "y": 38
+      },
+      {
+        "x": 9,
+        "y": 38
+      },
+      {
+        "x": 0,
+        "y": 37
+      },
+      {
+        "x": 9,
+        "y": 37
+      }
+    ],
+    "difficulty": 1.5,
+    "gravityMs": 650,
+    "limitMs": 140000,
+    "surviveMs": null,
+    "layers": [
+      {
+        "rows": 3,
+        "gap": 1,
+        "width": 4
+      }
+    ],
+    "aiMoveMs": null,
+    "aiHandicapRows": null,
+    "stars": [
+      "클리어",
+      "93초 이내",
+      "63초 이내"
+    ],
+    "developerScenario": "선택 → 목표·별 확인 → 새 랜덤 순서 시작 → 해당 목표 달성 → 결과·별 저장·다음 단계. 도중 목표를 누르면 정지하여 조건 확인, 계속하기로 재개. 제한 시간 소진/보드 넘침은 실패."
+  },
+  {
+    "id": 14,
+    "kind": "survival",
+    "goal": "60초 동안 살아남기",
+    "target": 0,
+    "targetCells": [],
+    "difficulty": 1.5,
+    "gravityMs": 200,
+    "limitMs": null,
+    "surviveMs": 60000,
+    "layers": [],
+    "aiMoveMs": null,
+    "aiHandicapRows": null,
+    "stars": [
+      "생존 완료",
+      "생존 + 6줄",
+      "생존 + 10줄"
+    ],
+    "developerScenario": "선택 → 목표·별 확인 → 새 랜덤 순서 시작 → 해당 목표 달성 → 결과·별 저장·다음 단계. 도중 목표를 누르면 정지하여 조건 확인, 계속하기로 재개. 제한 시간 소진/보드 넘침은 실패."
+  },
+  {
+    "id": 15,
+    "kind": "duel",
+    "goal": "175초 안에 줄을 지워 방해 줄을 보내고 AI 보드를 넘치게 만들기",
+    "target": 0,
+    "targetCells": [],
+    "difficulty": 1.5,
+    "gravityMs": 650,
+    "limitMs": 175000,
+    "surviveMs": null,
+    "layers": [],
+    "aiMoveMs": 2800,
+    "aiHandicapRows": 2,
+    "stars": [
+      "클리어",
+      "140초 이내",
+      "96초 이내"
+    ],
+    "developerScenario": "선택 → 목표·별 확인 → 새 랜덤 순서 시작 → 해당 목표 달성 → 결과·별 저장·다음 단계. 도중 목표를 누르면 정지하여 조건 확인, 계속하기로 재개. 제한 시간 소진/보드 넘침은 실패."
+  },
+  {
+    "id": 16,
+    "kind": "timed",
+    "goal": "130초 안에 ◇ 표시 블록 4개 모두 제거하기",
+    "target": 4,
+    "targetCells": [
+      {
+        "x": 0,
+        "y": 39
+      },
+      {
+        "x": 9,
+        "y": 39
+      },
+      {
+        "x": 0,
+        "y": 38
+      },
+      {
+        "x": 9,
+        "y": 38
+      }
+    ],
+    "difficulty": 1.5,
+    "gravityMs": 650,
+    "limitMs": 130000,
+    "surviveMs": null,
+    "layers": [
+      {
+        "rows": 3,
+        "gap": 5,
+        "width": 4
+      }
+    ],
+    "aiMoveMs": null,
+    "aiHandicapRows": null,
+    "stars": [
+      "클리어",
+      "86초 이내",
+      "58초 이내"
+    ],
+    "developerScenario": "선택 → 목표·별 확인 → 새 랜덤 순서 시작 → 해당 목표 달성 → 결과·별 저장·다음 단계. 도중 목표를 누르면 정지하여 조건 확인, 계속하기로 재개. 제한 시간 소진/보드 넘침은 실패."
+  },
+  {
+    "id": 17,
+    "kind": "timed",
+    "goal": "135초 안에 8줄 지우기",
+    "target": 8,
+    "targetCells": [],
+    "difficulty": 1.5,
+    "gravityMs": 650,
+    "limitMs": 135000,
+    "surviveMs": null,
+    "layers": [],
+    "aiMoveMs": null,
+    "aiHandicapRows": null,
+    "stars": [
+      "클리어",
+      "90초 이내",
+      "60초 이내"
+    ],
+    "developerScenario": "선택 → 목표·별 확인 → 새 랜덤 순서 시작 → 해당 목표 달성 → 결과·별 저장·다음 단계. 도중 목표를 누르면 정지하여 조건 확인, 계속하기로 재개. 제한 시간 소진/보드 넘침은 실패."
+  },
+  {
+    "id": 18,
+    "kind": "timed",
+    "goal": "135초 안에 ◇ 표시 블록 6개 모두 제거하기",
+    "target": 6,
+    "targetCells": [
+      {
+        "x": 0,
+        "y": 39
+      },
+      {
+        "x": 9,
+        "y": 39
+      },
+      {
+        "x": 0,
+        "y": 38
+      },
+      {
+        "x": 9,
+        "y": 38
+      },
+      {
+        "x": 0,
+        "y": 37
+      },
+      {
+        "x": 9,
+        "y": 37
+      }
+    ],
+    "difficulty": 1.5,
+    "gravityMs": 650,
+    "limitMs": 135000,
+    "surviveMs": null,
+    "layers": [
+      {
+        "rows": 4,
+        "gap": 4,
+        "width": 4
+      }
+    ],
+    "aiMoveMs": null,
+    "aiHandicapRows": null,
+    "stars": [
+      "클리어",
+      "90초 이내",
+      "60초 이내"
+    ],
+    "developerScenario": "선택 → 목표·별 확인 → 새 랜덤 순서 시작 → 해당 목표 달성 → 결과·별 저장·다음 단계. 도중 목표를 누르면 정지하여 조건 확인, 계속하기로 재개. 제한 시간 소진/보드 넘침은 실패."
+  },
+  {
+    "id": 19,
+    "kind": "timed",
+    "goal": "125초 안에 9줄 지우기",
+    "target": 9,
+    "targetCells": [],
+    "difficulty": 2,
+    "gravityMs": 450,
+    "limitMs": 125000,
+    "surviveMs": null,
+    "layers": [],
+    "aiMoveMs": null,
+    "aiHandicapRows": null,
+    "stars": [
+      "클리어",
+      "83초 이내",
+      "56초 이내"
+    ],
+    "developerScenario": "선택 → 목표·별 확인 → 새 랜덤 순서 시작 → 해당 목표 달성 → 결과·별 저장·다음 단계. 도중 목표를 누르면 정지하여 조건 확인, 계속하기로 재개. 제한 시간 소진/보드 넘침은 실패."
+  },
+  {
+    "id": 20,
+    "kind": "duel",
+    "goal": "170초 안에 줄을 지워 방해 줄을 보내고 AI 보드를 넘치게 만들기",
+    "target": 0,
+    "targetCells": [],
+    "difficulty": 2,
+    "gravityMs": 450,
+    "limitMs": 170000,
+    "surviveMs": null,
+    "layers": [],
+    "aiMoveMs": 2200,
+    "aiHandicapRows": 0,
+    "stars": [
+      "클리어",
+      "136초 이내",
+      "93초 이내"
+    ],
+    "developerScenario": "선택 → 목표·별 확인 → 새 랜덤 순서 시작 → 해당 목표 달성 → 결과·별 저장·다음 단계. 도중 목표를 누르면 정지하여 조건 확인, 계속하기로 재개. 제한 시간 소진/보드 넘침은 실패."
+  },
+  {
+    "id": 21,
+    "kind": "timed",
+    "goal": "135초 안에 8줄 지우기",
+    "target": 8,
+    "targetCells": [],
+    "difficulty": 1.5,
+    "gravityMs": 650,
+    "limitMs": 135000,
+    "surviveMs": null,
+    "layers": [],
+    "aiMoveMs": null,
+    "aiHandicapRows": null,
+    "stars": [
+      "클리어",
+      "90초 이내",
+      "60초 이내"
+    ],
+    "developerScenario": "선택 → 목표·별 확인 → 새 랜덤 순서 시작 → 해당 목표 달성 → 결과·별 저장·다음 단계. 도중 목표를 누르면 정지하여 조건 확인, 계속하기로 재개. 제한 시간 소진/보드 넘침은 실패."
+  },
+  {
+    "id": 22,
+    "kind": "timed",
+    "goal": "130초 안에 10줄 지우기",
+    "target": 10,
+    "targetCells": [],
+    "difficulty": 2,
+    "gravityMs": 450,
+    "limitMs": 130000,
+    "surviveMs": null,
+    "layers": [],
+    "aiMoveMs": null,
+    "aiHandicapRows": null,
+    "stars": [
+      "클리어",
+      "86초 이내",
+      "58초 이내"
+    ],
+    "developerScenario": "선택 → 목표·별 확인 → 새 랜덤 순서 시작 → 해당 목표 달성 → 결과·별 저장·다음 단계. 도중 목표를 누르면 정지하여 조건 확인, 계속하기로 재개. 제한 시간 소진/보드 넘침은 실패."
+  },
+  {
+    "id": 23,
+    "kind": "survival",
+    "goal": "75초 동안 살아남기",
+    "target": 0,
+    "targetCells": [],
+    "difficulty": 2,
+    "gravityMs": 200,
+    "limitMs": null,
+    "surviveMs": 75000,
+    "layers": [],
+    "aiMoveMs": null,
+    "aiHandicapRows": null,
+    "stars": [
+      "생존 완료",
+      "생존 + 8줄",
+      "생존 + 13줄"
+    ],
+    "developerScenario": "선택 → 목표·별 확인 → 새 랜덤 순서 시작 → 해당 목표 달성 → 결과·별 저장·다음 단계. 도중 목표를 누르면 정지하여 조건 확인, 계속하기로 재개. 제한 시간 소진/보드 넘침은 실패."
+  },
+  {
+    "id": 24,
+    "kind": "timed",
+    "goal": "125초 안에 ◇ 표시 블록 6개 모두 제거하기",
+    "target": 6,
+    "targetCells": [
+      {
+        "x": 0,
+        "y": 39
+      },
+      {
+        "x": 9,
+        "y": 39
+      },
+      {
+        "x": 0,
+        "y": 38
+      },
+      {
+        "x": 9,
+        "y": 38
+      },
+      {
+        "x": 0,
+        "y": 37
+      },
+      {
+        "x": 9,
+        "y": 37
+      }
+    ],
+    "difficulty": 2,
+    "gravityMs": 450,
+    "limitMs": 125000,
+    "surviveMs": null,
+    "layers": [
+      {
+        "rows": 4,
+        "gap": 5,
+        "width": 4
+      }
+    ],
+    "aiMoveMs": null,
+    "aiHandicapRows": null,
+    "stars": [
+      "클리어",
+      "83초 이내",
+      "56초 이내"
+    ],
+    "developerScenario": "선택 → 목표·별 확인 → 새 랜덤 순서 시작 → 해당 목표 달성 → 결과·별 저장·다음 단계. 도중 목표를 누르면 정지하여 조건 확인, 계속하기로 재개. 제한 시간 소진/보드 넘침은 실패."
+  },
+  {
+    "id": 25,
+    "kind": "duel",
+    "goal": "170초 안에 줄을 지워 방해 줄을 보내고 AI 보드를 넘치게 만들기",
+    "target": 0,
+    "targetCells": [],
+    "difficulty": 2,
+    "gravityMs": 450,
+    "limitMs": 170000,
+    "surviveMs": null,
+    "layers": [],
+    "aiMoveMs": 2350,
+    "aiHandicapRows": 1,
+    "stars": [
+      "클리어",
+      "136초 이내",
+      "93초 이내"
+    ],
+    "developerScenario": "선택 → 목표·별 확인 → 새 랜덤 순서 시작 → 해당 목표 달성 → 결과·별 저장·다음 단계. 도중 목표를 누르면 정지하여 조건 확인, 계속하기로 재개. 제한 시간 소진/보드 넘침은 실패."
+  },
+  {
+    "id": 26,
+    "kind": "timed",
+    "goal": "130초 안에 ◇ 표시 블록 6개 모두 제거하기",
+    "target": 6,
+    "targetCells": [
+      {
+        "x": 0,
+        "y": 39
+      },
+      {
+        "x": 9,
+        "y": 39
+      },
+      {
+        "x": 0,
+        "y": 38
+      },
+      {
+        "x": 9,
+        "y": 38
+      },
+      {
+        "x": 0,
+        "y": 37
+      },
+      {
+        "x": 9,
+        "y": 37
+      }
+    ],
+    "difficulty": 2,
+    "gravityMs": 450,
+    "limitMs": 130000,
+    "surviveMs": null,
+    "layers": [
+      {
+        "rows": 4,
+        "gap": 4,
+        "width": 4
+      }
+    ],
+    "aiMoveMs": null,
+    "aiHandicapRows": null,
+    "stars": [
+      "클리어",
+      "86초 이내",
+      "58초 이내"
+    ],
+    "developerScenario": "선택 → 목표·별 확인 → 새 랜덤 순서 시작 → 해당 목표 달성 → 결과·별 저장·다음 단계. 도중 목표를 누르면 정지하여 조건 확인, 계속하기로 재개. 제한 시간 소진/보드 넘침은 실패."
+  },
+  {
+    "id": 27,
+    "kind": "timed",
+    "goal": "125초 안에 11줄 지우기",
+    "target": 11,
+    "targetCells": [],
+    "difficulty": 2,
+    "gravityMs": 450,
+    "limitMs": 125000,
+    "surviveMs": null,
+    "layers": [],
+    "aiMoveMs": null,
+    "aiHandicapRows": null,
+    "stars": [
+      "클리어",
+      "83초 이내",
+      "56초 이내"
+    ],
+    "developerScenario": "선택 → 목표·별 확인 → 새 랜덤 순서 시작 → 해당 목표 달성 → 결과·별 저장·다음 단계. 도중 목표를 누르면 정지하여 조건 확인, 계속하기로 재개. 제한 시간 소진/보드 넘침은 실패."
+  },
+  {
+    "id": 28,
+    "kind": "timed",
+    "goal": "120초 안에 ◇ 표시 블록 8개 모두 제거하기",
+    "target": 8,
+    "targetCells": [
+      {
+        "x": 0,
+        "y": 39
+      },
+      {
+        "x": 9,
+        "y": 39
+      },
+      {
+        "x": 0,
+        "y": 38
+      },
+      {
+        "x": 9,
+        "y": 38
+      },
+      {
+        "x": 0,
+        "y": 37
+      },
+      {
+        "x": 9,
+        "y": 37
+      },
+      {
+        "x": 0,
+        "y": 36
+      },
+      {
+        "x": 9,
+        "y": 36
+      }
+    ],
+    "difficulty": 2.5,
+    "gravityMs": 300,
+    "limitMs": 120000,
+    "surviveMs": null,
+    "layers": [
+      {
+        "rows": 5,
+        "gap": 5,
+        "width": 4
+      }
+    ],
+    "aiMoveMs": null,
+    "aiHandicapRows": null,
+    "stars": [
+      "클리어",
+      "80초 이내",
+      "54초 이내"
+    ],
+    "developerScenario": "선택 → 목표·별 확인 → 새 랜덤 순서 시작 → 해당 목표 달성 → 결과·별 저장·다음 단계. 도중 목표를 누르면 정지하여 조건 확인, 계속하기로 재개. 제한 시간 소진/보드 넘침은 실패."
+  },
+  {
+    "id": 29,
+    "kind": "timed",
+    "goal": "120초 안에 12줄 지우기",
+    "target": 12,
+    "targetCells": [],
+    "difficulty": 2.5,
+    "gravityMs": 300,
+    "limitMs": 120000,
+    "surviveMs": null,
+    "layers": [],
+    "aiMoveMs": null,
+    "aiHandicapRows": null,
+    "stars": [
+      "클리어",
+      "80초 이내",
+      "54초 이내"
+    ],
+    "developerScenario": "선택 → 목표·별 확인 → 새 랜덤 순서 시작 → 해당 목표 달성 → 결과·별 저장·다음 단계. 도중 목표를 누르면 정지하여 조건 확인, 계속하기로 재개. 제한 시간 소진/보드 넘침은 실패."
+  },
+  {
+    "id": 30,
+    "kind": "duel",
+    "goal": "165초 안에 줄을 지워 방해 줄을 보내고 AI 보드를 넘치게 만들기",
+    "target": 0,
+    "targetCells": [],
+    "difficulty": 3,
+    "gravityMs": 190,
+    "limitMs": 165000,
+    "surviveMs": null,
+    "layers": [],
+    "aiMoveMs": 1800,
+    "aiHandicapRows": 0,
+    "stars": [
+      "클리어",
+      "132초 이내",
+      "90초 이내"
+    ],
+    "developerScenario": "선택 → 목표·별 확인 → 새 랜덤 순서 시작 → 해당 목표 달성 → 결과·별 저장·다음 단계. 도중 목표를 누르면 정지하여 조건 확인, 계속하기로 재개. 제한 시간 소진/보드 넘침은 실패."
+  },
+  {
+    "id": 31,
+    "kind": "timed",
+    "goal": "130초 안에 ◇ 표시 블록 6개 모두 제거하기",
+    "target": 6,
+    "targetCells": [
+      {
+        "x": 0,
+        "y": 39
+      },
+      {
+        "x": 9,
+        "y": 39
+      },
+      {
+        "x": 0,
+        "y": 38
+      },
+      {
+        "x": 9,
+        "y": 38
+      },
+      {
+        "x": 0,
+        "y": 37
+      },
+      {
+        "x": 9,
+        "y": 37
+      }
+    ],
+    "difficulty": 2.5,
+    "gravityMs": 300,
+    "limitMs": 130000,
+    "surviveMs": null,
+    "layers": [
+      {
+        "rows": 4,
+        "gap": 2,
+        "width": 4
+      }
+    ],
+    "aiMoveMs": null,
+    "aiHandicapRows": null,
+    "stars": [
+      "클리어",
+      "86초 이내",
+      "58초 이내"
+    ],
+    "developerScenario": "선택 → 목표·별 확인 → 새 랜덤 순서 시작 → 해당 목표 달성 → 결과·별 저장·다음 단계. 도중 목표를 누르면 정지하여 조건 확인, 계속하기로 재개. 제한 시간 소진/보드 넘침은 실패."
+  },
+  {
+    "id": 32,
+    "kind": "timed",
+    "goal": "120초 안에 13줄 지우기",
+    "target": 13,
+    "targetCells": [],
+    "difficulty": 2.5,
+    "gravityMs": 300,
+    "limitMs": 120000,
+    "surviveMs": null,
+    "layers": [],
+    "aiMoveMs": null,
+    "aiHandicapRows": null,
+    "stars": [
+      "클리어",
+      "80초 이내",
+      "54초 이내"
+    ],
+    "developerScenario": "선택 → 목표·별 확인 → 새 랜덤 순서 시작 → 해당 목표 달성 → 결과·별 저장·다음 단계. 도중 목표를 누르면 정지하여 조건 확인, 계속하기로 재개. 제한 시간 소진/보드 넘침은 실패."
+  },
+  {
+    "id": 33,
+    "kind": "survival",
+    "goal": "80초 동안 살아남기",
+    "target": 0,
+    "targetCells": [],
+    "difficulty": 2.5,
+    "gravityMs": 200,
+    "limitMs": null,
+    "surviveMs": 80000,
+    "layers": [],
+    "aiMoveMs": null,
+    "aiHandicapRows": null,
+    "stars": [
+      "생존 완료",
+      "생존 + 8줄",
+      "생존 + 14줄"
+    ],
+    "developerScenario": "선택 → 목표·별 확인 → 새 랜덤 순서 시작 → 해당 목표 달성 → 결과·별 저장·다음 단계. 도중 목표를 누르면 정지하여 조건 확인, 계속하기로 재개. 제한 시간 소진/보드 넘침은 실패."
+  },
+  {
+    "id": 34,
+    "kind": "timed",
+    "goal": "115초 안에 ◇ 표시 블록 8개 모두 제거하기",
+    "target": 8,
+    "targetCells": [
+      {
+        "x": 0,
+        "y": 39
+      },
+      {
+        "x": 9,
+        "y": 39
+      },
+      {
+        "x": 0,
+        "y": 38
+      },
+      {
+        "x": 9,
+        "y": 38
+      },
+      {
+        "x": 0,
+        "y": 37
+      },
+      {
+        "x": 9,
+        "y": 37
+      },
+      {
+        "x": 0,
+        "y": 36
+      },
+      {
+        "x": 9,
+        "y": 36
+      }
+    ],
+    "difficulty": 3,
+    "gravityMs": 190,
+    "limitMs": 115000,
+    "surviveMs": null,
+    "layers": [
+      {
+        "rows": 5,
+        "gap": 4,
+        "width": 4
+      }
+    ],
+    "aiMoveMs": null,
+    "aiHandicapRows": null,
+    "stars": [
+      "클리어",
+      "76초 이내",
+      "51초 이내"
+    ],
+    "developerScenario": "선택 → 목표·별 확인 → 새 랜덤 순서 시작 → 해당 목표 달성 → 결과·별 저장·다음 단계. 도중 목표를 누르면 정지하여 조건 확인, 계속하기로 재개. 제한 시간 소진/보드 넘침은 실패."
+  },
+  {
+    "id": 35,
+    "kind": "duel",
+    "goal": "160초 안에 줄을 지워 방해 줄을 보내고 AI 보드를 넘치게 만들기",
+    "target": 0,
+    "targetCells": [],
+    "difficulty": 3,
+    "gravityMs": 190,
+    "limitMs": 160000,
+    "surviveMs": null,
+    "layers": [],
+    "aiMoveMs": 1950,
+    "aiHandicapRows": 0,
+    "stars": [
+      "클리어",
+      "128초 이내",
+      "88초 이내"
+    ],
+    "developerScenario": "선택 → 목표·별 확인 → 새 랜덤 순서 시작 → 해당 목표 달성 → 결과·별 저장·다음 단계. 도중 목표를 누르면 정지하여 조건 확인, 계속하기로 재개. 제한 시간 소진/보드 넘침은 실패."
+  },
+  {
+    "id": 36,
+    "kind": "timed",
+    "goal": "125초 안에 ◇ 표시 블록 8개 모두 제거하기",
+    "target": 8,
+    "targetCells": [
+      {
+        "x": 0,
+        "y": 39
+      },
+      {
+        "x": 9,
+        "y": 39
+      },
+      {
+        "x": 0,
+        "y": 38
+      },
+      {
+        "x": 9,
+        "y": 38
+      },
+      {
+        "x": 0,
+        "y": 37
+      },
+      {
+        "x": 9,
+        "y": 37
+      },
+      {
+        "x": 0,
+        "y": 36
+      },
+      {
+        "x": 9,
+        "y": 36
+      }
+    ],
+    "difficulty": 2.5,
+    "gravityMs": 300,
+    "limitMs": 125000,
+    "surviveMs": null,
+    "layers": [
+      {
+        "rows": 5,
+        "gap": 5,
+        "width": 4
+      }
+    ],
+    "aiMoveMs": null,
+    "aiHandicapRows": null,
+    "stars": [
+      "클리어",
+      "83초 이내",
+      "56초 이내"
+    ],
+    "developerScenario": "선택 → 목표·별 확인 → 새 랜덤 순서 시작 → 해당 목표 달성 → 결과·별 저장·다음 단계. 도중 목표를 누르면 정지하여 조건 확인, 계속하기로 재개. 제한 시간 소진/보드 넘침은 실패."
+  },
+  {
+    "id": 37,
+    "kind": "timed",
+    "goal": "115초 안에 14줄 지우기",
+    "target": 14,
+    "targetCells": [],
+    "difficulty": 3,
+    "gravityMs": 190,
+    "limitMs": 115000,
+    "surviveMs": null,
+    "layers": [],
+    "aiMoveMs": null,
+    "aiHandicapRows": null,
+    "stars": [
+      "클리어",
+      "76초 이내",
+      "51초 이내"
+    ],
+    "developerScenario": "선택 → 목표·별 확인 → 새 랜덤 순서 시작 → 해당 목표 달성 → 결과·별 저장·다음 단계. 도중 목표를 누르면 정지하여 조건 확인, 계속하기로 재개. 제한 시간 소진/보드 넘침은 실패."
+  },
+  {
+    "id": 38,
+    "kind": "timed",
+    "goal": "115초 안에 ◇ 표시 블록 10개 모두 제거하기",
+    "target": 10,
+    "targetCells": [
+      {
+        "x": 0,
+        "y": 39
+      },
+      {
+        "x": 9,
+        "y": 39
+      },
+      {
+        "x": 0,
+        "y": 38
+      },
+      {
+        "x": 9,
+        "y": 38
+      },
+      {
+        "x": 0,
+        "y": 37
+      },
+      {
+        "x": 9,
+        "y": 37
+      },
+      {
+        "x": 0,
+        "y": 36
+      },
+      {
+        "x": 9,
+        "y": 36
+      },
+      {
+        "x": 0,
+        "y": 35
+      },
+      {
+        "x": 9,
+        "y": 35
+      }
+    ],
+    "difficulty": 3,
+    "gravityMs": 190,
+    "limitMs": 115000,
+    "surviveMs": null,
+    "layers": [
+      {
+        "rows": 6,
+        "gap": 4,
+        "width": 4
+      }
+    ],
+    "aiMoveMs": null,
+    "aiHandicapRows": null,
+    "stars": [
+      "클리어",
+      "76초 이내",
+      "51초 이내"
+    ],
+    "developerScenario": "선택 → 목표·별 확인 → 새 랜덤 순서 시작 → 해당 목표 달성 → 결과·별 저장·다음 단계. 도중 목표를 누르면 정지하여 조건 확인, 계속하기로 재개. 제한 시간 소진/보드 넘침은 실패."
+  },
+  {
+    "id": 39,
+    "kind": "timed",
+    "goal": "110초 안에 15줄 지우기",
+    "target": 15,
+    "targetCells": [],
+    "difficulty": 3,
+    "gravityMs": 190,
+    "limitMs": 110000,
+    "surviveMs": null,
+    "layers": [],
+    "aiMoveMs": null,
+    "aiHandicapRows": null,
+    "stars": [
+      "클리어",
+      "73초 이내",
+      "49초 이내"
+    ],
+    "developerScenario": "선택 → 목표·별 확인 → 새 랜덤 순서 시작 → 해당 목표 달성 → 결과·별 저장·다음 단계. 도중 목표를 누르면 정지하여 조건 확인, 계속하기로 재개. 제한 시간 소진/보드 넘침은 실패."
+  },
+  {
+    "id": 40,
+    "kind": "duel",
+    "goal": "155초 안에 줄을 지워 방해 줄을 보내고 AI 보드를 넘치게 만들기",
+    "target": 0,
+    "targetCells": [],
+    "difficulty": 3.5,
+    "gravityMs": 120,
+    "limitMs": 155000,
+    "surviveMs": null,
+    "layers": [],
+    "aiMoveMs": 1450,
+    "aiHandicapRows": 0,
+    "stars": [
+      "클리어",
+      "124초 이내",
+      "85초 이내"
+    ],
+    "developerScenario": "선택 → 목표·별 확인 → 새 랜덤 순서 시작 → 해당 목표 달성 → 결과·별 저장·다음 단계. 도중 목표를 누르면 정지하여 조건 확인, 계속하기로 재개. 제한 시간 소진/보드 넘침은 실패."
+  },
+  {
+    "id": 41,
+    "kind": "timed",
+    "goal": "120초 안에 ◇ 표시 블록 8개 모두 제거하기",
+    "target": 8,
+    "targetCells": [
+      {
+        "x": 0,
+        "y": 39
+      },
+      {
+        "x": 9,
+        "y": 39
+      },
+      {
+        "x": 0,
+        "y": 38
+      },
+      {
+        "x": 9,
+        "y": 38
+      },
+      {
+        "x": 0,
+        "y": 37
+      },
+      {
+        "x": 9,
+        "y": 37
+      },
+      {
+        "x": 0,
+        "y": 36
+      },
+      {
+        "x": 9,
+        "y": 36
+      }
+    ],
+    "difficulty": 3,
+    "gravityMs": 190,
+    "limitMs": 120000,
+    "surviveMs": null,
+    "layers": [
+      {
+        "rows": 5,
+        "gap": 1,
+        "width": 4
+      }
+    ],
+    "aiMoveMs": null,
+    "aiHandicapRows": null,
+    "stars": [
+      "클리어",
+      "80초 이내",
+      "54초 이내"
+    ],
+    "developerScenario": "선택 → 목표·별 확인 → 새 랜덤 순서 시작 → 해당 목표 달성 → 결과·별 저장·다음 단계. 도중 목표를 누르면 정지하여 조건 확인, 계속하기로 재개. 제한 시간 소진/보드 넘침은 실패."
+  },
+  {
+    "id": 42,
+    "kind": "timed",
+    "goal": "115초 안에 15줄 지우기",
+    "target": 15,
+    "targetCells": [],
+    "difficulty": 3,
+    "gravityMs": 190,
+    "limitMs": 115000,
+    "surviveMs": null,
+    "layers": [],
+    "aiMoveMs": null,
+    "aiHandicapRows": null,
+    "stars": [
+      "클리어",
+      "76초 이내",
+      "51초 이내"
+    ],
+    "developerScenario": "선택 → 목표·별 확인 → 새 랜덤 순서 시작 → 해당 목표 달성 → 결과·별 저장·다음 단계. 도중 목표를 누르면 정지하여 조건 확인, 계속하기로 재개. 제한 시간 소진/보드 넘침은 실패."
+  },
+  {
+    "id": 43,
+    "kind": "survival",
+    "goal": "90초 동안 살아남기",
+    "target": 0,
+    "targetCells": [],
+    "difficulty": 3.5,
+    "gravityMs": 120,
+    "limitMs": null,
+    "surviveMs": 90000,
+    "layers": [],
+    "aiMoveMs": null,
+    "aiHandicapRows": null,
+    "stars": [
+      "생존 완료",
+      "생존 + 9줄",
+      "생존 + 15줄"
+    ],
+    "developerScenario": "선택 → 목표·별 확인 → 새 랜덤 순서 시작 → 해당 목표 달성 → 결과·별 저장·다음 단계. 도중 목표를 누르면 정지하여 조건 확인, 계속하기로 재개. 제한 시간 소진/보드 넘침은 실패."
+  },
+  {
+    "id": 44,
+    "kind": "timed",
+    "goal": "110초 안에 ◇ 표시 블록 10개 모두 제거하기",
+    "target": 10,
+    "targetCells": [
+      {
+        "x": 0,
+        "y": 39
+      },
+      {
+        "x": 9,
+        "y": 39
+      },
+      {
+        "x": 0,
+        "y": 38
+      },
+      {
+        "x": 9,
+        "y": 38
+      },
+      {
+        "x": 0,
+        "y": 37
+      },
+      {
+        "x": 9,
+        "y": 37
+      },
+      {
+        "x": 0,
+        "y": 36
+      },
+      {
+        "x": 9,
+        "y": 36
+      },
+      {
+        "x": 0,
+        "y": 35
+      },
+      {
+        "x": 9,
+        "y": 35
+      }
+    ],
+    "difficulty": 3.5,
+    "gravityMs": 120,
+    "limitMs": 110000,
+    "surviveMs": null,
+    "layers": [
+      {
+        "rows": 6,
+        "gap": 5,
+        "width": 4
+      }
+    ],
+    "aiMoveMs": null,
+    "aiHandicapRows": null,
+    "stars": [
+      "클리어",
+      "73초 이내",
+      "49초 이내"
+    ],
+    "developerScenario": "선택 → 목표·별 확인 → 새 랜덤 순서 시작 → 해당 목표 달성 → 결과·별 저장·다음 단계. 도중 목표를 누르면 정지하여 조건 확인, 계속하기로 재개. 제한 시간 소진/보드 넘침은 실패."
+  },
+  {
+    "id": 45,
+    "kind": "duel",
+    "goal": "150초 안에 줄을 지워 방해 줄을 보내고 AI 보드를 넘치게 만들기",
+    "target": 0,
+    "targetCells": [],
+    "difficulty": 3.5,
+    "gravityMs": 120,
+    "limitMs": 150000,
+    "surviveMs": null,
+    "layers": [],
+    "aiMoveMs": 1600,
+    "aiHandicapRows": 0,
+    "stars": [
+      "클리어",
+      "120초 이내",
+      "82초 이내"
+    ],
+    "developerScenario": "선택 → 목표·별 확인 → 새 랜덤 순서 시작 → 해당 목표 달성 → 결과·별 저장·다음 단계. 도중 목표를 누르면 정지하여 조건 확인, 계속하기로 재개. 제한 시간 소진/보드 넘침은 실패."
+  },
+  {
+    "id": 46,
+    "kind": "timed",
+    "goal": "115초 안에 ◇ 표시 블록 8개 모두 제거하기",
+    "target": 8,
+    "targetCells": [
+      {
+        "x": 0,
+        "y": 39
+      },
+      {
+        "x": 9,
+        "y": 39
+      },
+      {
+        "x": 0,
+        "y": 38
+      },
+      {
+        "x": 9,
+        "y": 38
+      },
+      {
+        "x": 0,
+        "y": 37
+      },
+      {
+        "x": 9,
+        "y": 37
+      },
+      {
+        "x": 0,
+        "y": 36
+      },
+      {
+        "x": 9,
+        "y": 36
+      }
+    ],
+    "difficulty": 3,
+    "gravityMs": 190,
+    "limitMs": 115000,
+    "surviveMs": null,
+    "layers": [
+      {
+        "rows": 5,
+        "gap": 4,
+        "width": 4
+      }
+    ],
+    "aiMoveMs": null,
+    "aiHandicapRows": null,
+    "stars": [
+      "클리어",
+      "76초 이내",
+      "51초 이내"
+    ],
+    "developerScenario": "선택 → 목표·별 확인 → 새 랜덤 순서 시작 → 해당 목표 달성 → 결과·별 저장·다음 단계. 도중 목표를 누르면 정지하여 조건 확인, 계속하기로 재개. 제한 시간 소진/보드 넘침은 실패."
+  },
+  {
+    "id": 47,
+    "kind": "timed",
+    "goal": "110초 안에 17줄 지우기",
+    "target": 17,
+    "targetCells": [],
+    "difficulty": 3.5,
+    "gravityMs": 120,
+    "limitMs": 110000,
+    "surviveMs": null,
+    "layers": [],
+    "aiMoveMs": null,
+    "aiHandicapRows": null,
+    "stars": [
+      "클리어",
+      "73초 이내",
+      "49초 이내"
+    ],
+    "developerScenario": "선택 → 목표·별 확인 → 새 랜덤 순서 시작 → 해당 목표 달성 → 결과·별 저장·다음 단계. 도중 목표를 누르면 정지하여 조건 확인, 계속하기로 재개. 제한 시간 소진/보드 넘침은 실패."
+  },
+  {
+    "id": 48,
+    "kind": "timed",
+    "goal": "110초 안에 ◇ 표시 블록 12개 모두 제거하기",
+    "target": 12,
+    "targetCells": [
+      {
+        "x": 0,
+        "y": 39
+      },
+      {
+        "x": 9,
+        "y": 39
+      },
+      {
+        "x": 0,
+        "y": 38
+      },
+      {
+        "x": 9,
+        "y": 38
+      },
+      {
+        "x": 0,
+        "y": 37
+      },
+      {
+        "x": 9,
+        "y": 37
+      },
+      {
+        "x": 0,
+        "y": 36
+      },
+      {
+        "x": 9,
+        "y": 36
+      },
+      {
+        "x": 0,
+        "y": 35
+      },
+      {
+        "x": 9,
+        "y": 35
+      },
+      {
+        "x": 0,
+        "y": 34
+      },
+      {
+        "x": 9,
+        "y": 34
+      }
+    ],
+    "difficulty": 3.5,
+    "gravityMs": 120,
+    "limitMs": 110000,
+    "surviveMs": null,
+    "layers": [
+      {
+        "rows": 7,
+        "gap": 5,
+        "width": 4
+      }
+    ],
+    "aiMoveMs": null,
+    "aiHandicapRows": null,
+    "stars": [
+      "클리어",
+      "73초 이내",
+      "49초 이내"
+    ],
+    "developerScenario": "선택 → 목표·별 확인 → 새 랜덤 순서 시작 → 해당 목표 달성 → 결과·별 저장·다음 단계. 도중 목표를 누르면 정지하여 조건 확인, 계속하기로 재개. 제한 시간 소진/보드 넘침은 실패."
+  },
+  {
+    "id": 49,
+    "kind": "timed",
+    "goal": "105초 안에 18줄 지우기",
+    "target": 18,
+    "targetCells": [],
+    "difficulty": 4,
+    "gravityMs": 65,
+    "limitMs": 105000,
+    "surviveMs": null,
+    "layers": [],
+    "aiMoveMs": null,
+    "aiHandicapRows": null,
+    "stars": [
+      "클리어",
+      "70초 이내",
+      "47초 이내"
+    ],
+    "developerScenario": "선택 → 목표·별 확인 → 새 랜덤 순서 시작 → 해당 목표 달성 → 결과·별 저장·다음 단계. 도중 목표를 누르면 정지하여 조건 확인, 계속하기로 재개. 제한 시간 소진/보드 넘침은 실패."
+  },
+  {
+    "id": 50,
+    "kind": "duel",
+    "goal": "150초 안에 줄을 지워 방해 줄을 보내고 AI 보드를 넘치게 만들기",
+    "target": 0,
+    "targetCells": [],
+    "difficulty": 4,
+    "gravityMs": 65,
+    "limitMs": 150000,
+    "surviveMs": null,
+    "layers": [],
+    "aiMoveMs": 1150,
+    "aiHandicapRows": 0,
+    "stars": [
+      "클리어",
+      "120초 이내",
+      "82초 이내"
+    ],
+    "developerScenario": "선택 → 목표·별 확인 → 새 랜덤 순서 시작 → 해당 목표 달성 → 결과·별 저장·다음 단계. 도중 목표를 누르면 정지하여 조건 확인, 계속하기로 재개. 제한 시간 소진/보드 넘침은 실패."
+  }
+]
